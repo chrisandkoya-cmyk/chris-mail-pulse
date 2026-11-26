@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Chris Mail Pulse — แดชบอร์ดสรุปอีเมลหลายบัญชี (05:00 & 18:00)</title>
+  <meta name="description" content="แดชบอร์ดสรุปอีเมล Gmail หลายบัญชีอัตโนมัติรอบ 05:00 น. และ 18:00 น. พร้อมธีมเกรเดียนต์เคลื่อนไหว ปรับฟอนต์ ขนาดข้อความ และแจ้งเตือน Discord" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Kanit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ตั้งค่าตัวแปรหลักสำหรับธีมเกรเดียนต์เคลื่อนไหว ฟอนต์ และขนาดตัวอักษร */
+    :root {
+      --base-font-size: 16px;
+      --font-family-main: 'IBM Plex Sans Thai', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --text-weight-body: 500;
+      --gradient-speed: 11s;
+
+      /* ค่าเริ่มต้น: ธีม Cyber Ocean (น้ำเงิน-ฟ้าไซเบอร์เคลื่อนไหว) */
+      --bg-gradient: linear-gradient(-45deg, #DBEAFE, #EFF6FF, #E0F2FE, #F0F9FF, #DBEAFE);
+      --hero-gradient: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #0284C7 100%);
+      --bg-surface: rgba(255, 255, 255, 0.94);
+      --bg-muted: rgba(241, 245, 249, 0.94);
+      --bg-hover: #E2E8F0;
+      --text-main: #0F172A;
+      --text-secondary: #1E293B;
+      --text-muted: #475569;
+      --border-color: rgba(148, 163, 184, 0.45);
+      --border-strong: #64748B;
+
+      --primary: #1D4ED8;
+      --primary-hover: #1E40AF;
+      --primary-soft: #DBEAFE;
+      --primary-border: #60A5FA;
+
+      --urgent: #DC2626;
+      --urgent-strong: #991B1B;
+      --urgent-soft: #FEE2E2;
+      --urgent-border: #F87171;
+
+      --general: #1D4ED8;
+      --general-soft: #DBEAFE;
+      --general-border: #93C5FD;
+
+      --promo: #475569;
+      --promo-soft: #E2E8F0;
+      --promo-border: #CBD5E1;
+
+      --success: #047857;
+      --success-bright: #059669;
+      --success-soft: #D1FAE5;
+      --success-border: #34D399;
+
+      --warning: #B45309;
+      --warning-bright: #D97706;
+      --warning-soft: #FEF3C7;
+      --warning-border: #FBBF24;
+
+      --discord: #5865F2;
+      --discord-bg: #2B2D31;
+      --discord-card: #313338;
+
+      --shadow-card: 0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+      --shadow-hover: 0 18px 36px -6px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+      --shadow-urgent: 0 10px 28px -4px rgba(220, 38, 38, 0.22);
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ธีมที่ 2: Sunset Ember (ตะวันรุ่งส้ม-ทอง-แดงเคลื่อนไหว) */
+    html[data-theme="sunset"] {
+      --bg-gradient: linear-gradient(-45deg, #FEF3C7, #FFEDD5, #FEE2E2, #FFFBEB, #FED7AA);
+      --hero-gradient: linear-gradient(135deg, #DC2626 0%, #EA580C 50%, #D97706 100%);
+      --primary: #EA580C;
+      --primary-hover: #C2410C;
+      --primary-soft: #FFEDD5;
+      --primary-border: #FB923C;
+    }
+
+    /* ธีมที่ 3: Aurora Emerald (แสงเหนือเขียวมรกต-ฟ้าน้ำทะเลเคลื่อนไหว) */
+    html[data-theme="aurora"] {
+      --bg-gradient: linear-gradient(-45deg, #D1FAE5, #CCFBF1, #E0F2FE, #ECFDF5, #A7F3D0);
+      --hero-gradient: linear-gradient(135deg, #047857 0%, #0D9488 50%, #0284C7 100%);
+      --primary: #047857;
+      --primary-hover: #065F46;
+      --primary-soft: #D1FAE5;
+      --primary-border: #34D399;
+    }
+
+    /* ธีมที่ 4: Midnight Nebula (โหมดมืดอวกาศน้ำเงินเข้ม-ฟ้านีออนเคลื่อนไหว) */
+    html[data-theme="midnight"] {
+      --bg-gradient: linear-gradient(-45deg, #030712, #0F172A, #082F49, #1E1B4B, #090D16);
+      --hero-gradient: linear-gradient(135deg, #2563EB 0%, #0284C7 50%, #06B6D4 100%);
+      --bg-surface: rgba(17, 24, 39, 0.94);
+      --bg-muted: rgba(30, 41, 59, 0.94);
+      --bg-hover: #334155;
+      --text-main: #F8FAFC;
+      --text-secondary: #E2E8F0;
+      --text-muted: #94A3B8;
+      --border-color: rgba(100, 116, 139, 0.52);
+      --border-strong: #94A3B8;
+
+      --primary: #38BDF8;
+      --primary-hover: #7DD3FC;
+      --primary-soft: rgba(56, 189, 248, 0.22);
+      --primary-border: rgba(56, 189, 248, 0.58);
+
+      --urgent: #F87171;
+      --urgent-strong: #FCA5A5;
+      --urgent-soft: rgba(239, 68, 68, 0.24);
+      --urgent-border: rgba(248, 113, 113, 0.62);
+
+      --general: #38BDF8;
+      --general-soft: rgba(56, 189, 248, 0.22);
+      --general-border: rgba(56, 189, 248, 0.5);
+
+      --promo: #CBD5E1;
+      --promo-soft: rgba(148, 163, 184, 0.18);
+      --promo-border: rgba(148, 163, 184, 0.4);
+
+      --success: #34D399;
+      --success-bright: #10B981;
+      --success-soft: rgba(16, 185, 129, 0.24);
+      --success-border: rgba(52, 211, 153, 0.55);
+
+      --warning: #FBBF24;
+      --warning-bright: #F59E0B;
+      --warning-soft: rgba(245, 158, 11, 0.24);
+      --warning-border: rgba(251, 191, 36, 0.58);
+
+      --shadow-card: 0 10px 26px -4px rgba(0, 0, 0, 0.55);
+      --shadow-hover: 0 20px 38px -6px rgba(0, 0, 0, 0.75);
+      --shadow-urgent: 0 10px 30px -4px rgba(239, 68, 68, 0.32);
+    }
+
+    /* ธีมที่ 5: Crimson Gaming (โหมดมืดแดงเพลิง-คาร์บอนเคลื่อนไหว) */
+    html[data-theme="crimson"] {
+      --bg-gradient: linear-gradient(-45deg, #09090B, #18181B, #450A0A, #1C1917, #09090B);
+      --hero-gradient: linear-gradient(135deg, #DC2626 0%, #EA580C 55%, #F59E0B 100%);
+      --bg-surface: rgba(24, 24, 27, 0.95);
+      --bg-muted: rgba(39, 39, 42, 0.94);
+      --bg-hover: #3F3F46;
+      --text-main: #FAFAFA;
+      --text-secondary: #E4E4E7;
+      --text-muted: #A1A1AA;
+      --border-color: rgba(113, 113, 122, 0.48);
+      --border-strong: #A1A1AA;
+
+      --primary: #F97316;
+      --primary-hover: #FB923C;
+      --primary-soft: rgba(249, 115, 22, 0.24);
+      --primary-border: rgba(251, 146, 60, 0.58);
+
+      --urgent: #EF4444;
+      --urgent-strong: #FCA5A5;
+      --urgent-soft: rgba(239, 68, 68, 0.26);
+      --urgent-border: rgba(248, 113, 113, 0.65);
+
+      --general: #38BDF8;
+      --general-soft: rgba(56, 189, 248, 0.22);
+      --general-border: rgba(56, 189, 248, 0.5);
+
+      --promo: #D4D4D8;
+      --promo-soft: rgba(161, 161, 170, 0.18);
+      --promo-border: rgba(161, 161, 170, 0.4);
+
+      --success: #34D399;
+      --success-bright: #10B981;
+      --success-soft: rgba(16, 185, 129, 0.24);
+      --success-border: rgba(52, 211, 153, 0.55);
+
+      --warning: #FBBF24;
+      --warning-bright: #F59E0B;
+      --warning-soft: rgba(245, 158, 11, 0.24);
+      --warning-border: rgba(251, 191, 36, 0.58);
+
+      --shadow-card: 0 10px 26px -4px rgba(0, 0, 0, 0.65);
+      --shadow-hover: 0 20px 38px -6px rgba(0, 0, 0, 0.85);
+      --shadow-urgent: 0 10px 30px -4px rgba(239, 68, 68, 0.36);
+    }
+
+    /* ธีมที่ 6: Solar Clean (สว่างคลีนเกรเดียนต์นุ่มนวลอ่านสบาย) */
+    html[data-theme="solar"] {
+      --bg-gradient: linear-gradient(-45deg, #F8FAFC, #F1F5F9, #FEFCE8, #EFF6FF, #F8FAFC);
+      --hero-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+      --primary: #0F172A;
+      --primary-hover: #334155;
+      --primary-soft: #E2E8F0;
+      --primary-border: #94A3B8;
+    }
+
+    /* คีย์เฟรมแอนิเมชันสำหรับพื้นหลังเกรเดียนต์เคลื่อนไหวและการเปลี่ยนหน้า */
+    @keyframes animatedGradientBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(18px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes pageSwitchEffect {
+      0% { opacity: 0.28; transform: translateY(10px) scale(0.99); filter: blur(2px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes rippleExpand {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.55; }
+      100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0; }
+    }
+
+    @keyframes pulseUrgent {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); }
+      50% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.38); opacity: 0.65; }
+    }
+
+    @keyframes spinIcon {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: translateY(18px) scale(0.94); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes shimmerBar {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      font-size: var(--base-font-size);
+      transition: font-size 180ms ease;
+    }
+
+    body {
+      font-family: var(--font-family-main);
+      font-weight: var(--text-weight-body);
+      background: var(--bg-gradient);
+      background-size: 350% 350%;
+      animation: animatedGradientBg var(--gradient-speed) ease infinite;
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      padding-bottom: 64px;
+      overflow-x: hidden;
+      transition: color 220ms ease;
+    }
+
+    body.motion-paused {
+      animation: none;
+      background-size: 100% 100%;
+    }
+
+    .app-container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .page-transition-active {
+      animation: pageSwitchEffect 280ms var(--spring) both;
+    }
+
+    /* เอฟเฟกต์คลื่นเวลาแตะหน้าจอโดยไม่บีบขนาดปุ่ม */
+    .click-burst-dot {
+      position: fixed;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.55) 0%, rgba(255, 255, 255, 0) 72%);
+      pointer-events: none;
+      z-index: 9999;
+      animation: rippleExpand 460ms ease-out forwards;
+    }
+
+    /* ไฮไลต์คำสำคัญสีแน่น รองรับการตัดคำเมื่อตัวอักษรใหญ่ (ไม่ล้นกล่อง) */
+    .hl-urgent,
+    .hl-deadline,
+    .hl-academic,
+    .hl-money {
+      display: inline;
+      font-weight: 800;
+      padding: 0.08em 0.45em;
+      border-radius: 6px;
+      font-size: 0.94em;
+      margin: 0 2px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    .hl-urgent {
+      background: var(--urgent);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+    }
+
+    .hl-deadline {
+      background: #F59E0B;
+      color: #0F172A;
+    }
+
+    .hl-academic {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .hl-money {
+      background: var(--success-bright);
+      color: #FFFFFF;
+    }
+
+    body[data-hl-mode="soft"] .hl-deadline {
+      background: var(--warning-soft);
+      color: var(--warning);
+      border: 1px solid var(--warning-border);
+    }
+
+    body[data-hl-mode="soft"] .hl-academic {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    body[data-hl-mode="soft"] .hl-money {
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+
+    body[data-hl-mode="underline"] .hl-urgent,
+    body[data-hl-mode="underline"] .hl-deadline,
+    body[data-hl-mode="underline"] .hl-academic,
+    body[data-hl-mode="underline"] .hl-money {
+      background: transparent;
+      color: inherit;
+      box-shadow: none;
+      border: none;
+      padding: 0 2px;
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 4px;
+    }
+    body[data-hl-mode="underline"] .hl-urgent { text-decoration-color: var(--urgent); color: var(--urgent); }
+    body[data-hl-mode="underline"] .hl-deadline { text-decoration-color: #F59E0B; }
+    body[data-hl-mode="underline"] .hl-academic { text-decoration-color: var(--primary); }
+    body[data-hl-mode="underline"] .hl-money { text-decoration-color: var(--success-bright); }
+
+    /* ส่วนหัวด้านบน */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+      position: relative;
+      animation: slideUpFade 350ms var(--spring) both;
+    }
+
+    .top-bar::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 12px;
+      right: 12px;
+      height: 4px;
+      border-radius: 0 0 4px 4px;
+      background: var(--hero-gradient);
+      background-size: 200% 200%;
+      animation: animatedGradientBg 6s ease infinite;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1 1 240px;
+    }
+
+    .brand-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 12px;
+      background: var(--hero-gradient);
+      background-size: 200% 200%;
+      animation: animatedGradientBg 6s ease infinite;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.22);
+    }
+
+    .brand-title {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .brand-title h1 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      line-height: 1.25;
+      overflow-wrap: break-word;
+    }
+
+    .schedule-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 3px;
+      flex-wrap: wrap;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background-color: var(--success-bright);
+      display: inline-block;
+      flex-shrink: 0;
+      animation: pulseLive 2s infinite ease-in-out;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    /* ปุ่มกดมาตรฐาน: ห้ามตัดข้อความแหว่ง ขยายความสูงตามขนาดฟอนต์อัตโนมัติ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 2.75rem;
+      height: auto;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.35;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: transform 180ms var(--spring), box-shadow 180ms var(--spring), background-color 180ms ease, border-color 180ms ease;
+      text-decoration: none;
+      white-space: normal;
+      text-align: center;
+      overflow-wrap: break-word;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .btn svg {
+      flex-shrink: 0;
+    }
+
+    .btn:hover {
+      background: var(--bg-muted);
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.96);
+    }
+
+    .btn-primary {
+      background: var(--hero-gradient);
+      background-size: 200% 200%;
+      animation: animatedGradientBg 8s ease infinite;
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-theme-customizer {
+      background: linear-gradient(135deg, #0D9488, #2563EB, #EA580C);
+      background-size: 240% 240%;
+      animation: animatedGradientBg 7s ease infinite;
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.32);
+    }
+
+    .btn-discord {
+      background: linear-gradient(135deg, #5865F2, #4752C4);
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+    }
+
+    .spinning svg {
+      animation: spinIcon 700ms linear infinite;
+    }
+
+    /* แถบสลับรอบเวลา 05:00 น. และ 18:00 น. */
+    .slot-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+      animation: slideUpFade 420ms var(--spring) both;
+    }
+
+    .slot-tab {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0.85rem 1rem;
+      background: var(--bg-surface);
+      backdrop-filter: blur(10px);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      color: var(--text-main);
+      transition: all 240ms var(--spring);
+      min-height: 4.2rem;
+      height: auto;
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .slot-tab:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .slot-tab:active {
+      transform: scale(0.97);
+    }
+
+    .slot-tab.active {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.24);
+    }
+
+    .slot-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .slot-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 10px;
+      background: var(--bg-muted);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slot-tab.active .slot-icon {
+      background: var(--hero-gradient);
+      color: #FFFFFF;
+    }
+
+    .slot-title {
+      font-weight: 800;
+      font-size: 1rem;
+      display: block;
+      line-height: 1.3;
+    }
+
+    .slot-sub {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: block;
+      line-height: 1.35;
+    }
+
+    .slot-badge {
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      background: var(--bg-muted);
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .slot-tab.active .slot-badge {
+      background: var(--hero-gradient);
+      color: #FFFFFF;
+    }
+
+    /* การ์ดสรุปภาพรวมจาก AI */
+    .brief-card {
+      background: var(--bg-surface);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-card);
+      animation: slideUpFade 480ms var(--spring) both;
+    }
+
+    .brief-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brief-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ai-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 0.32rem 0.75rem;
+      border-radius: 8px;
+      background: var(--hero-gradient);
+      background-size: 200% 200%;
+      animation: animatedGradientBg 6s ease infinite;
+      color: #FFFFFF;
+    }
+
+    .brief-text {
+      font-size: 1rem;
+      color: var(--text-main);
+      font-weight: 600;
+      margin-bottom: 14px;
+      line-height: 1.68;
+      padding: 0.85rem 1rem;
+      background: var(--bg-muted);
+      border-left: 5px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      overflow-wrap: break-word;
+    }
+
+    /* กล่องงานด่วนที่ต้องทำทันทีบนสุด */
+    .urgent-quick-box {
+      background: var(--urgent-soft);
+      border: 2px solid var(--urgent-border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1rem;
+      margin-bottom: 16px;
+    }
+
+    .urgent-quick-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .urgent-quick-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--urgent);
+      line-height: 1.4;
+    }
+
+    .urgent-pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--urgent);
+      flex-shrink: 0;
+      animation: pulseUrgent 1.6s infinite;
+    }
+
+    .urgent-quick-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .urgent-quick-item {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--urgent-border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.95rem;
+      transition: all 200ms var(--spring);
+    }
+
+    .urgent-quick-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .urgent-quick-text {
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--text-main);
+      overflow-wrap: break-word;
+    }
+
+    .urgent-quick-item.done {
+      opacity: 0.6;
+      border-color: var(--success-border);
+      background: var(--success-soft);
+    }
+
+    .progress-wrap {
+      margin-bottom: 14px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 11px;
+      background: var(--bg-hover);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #059669, #10B981, #34D399, #059669);
+      background-size: 200% 100%;
+      animation: shimmerBar 3s linear infinite;
+      border-radius: 999px;
+      transition: width 450ms var(--spring);
+    }
+
+    /* กล่องสถิติ 4 ช่อง ขยายความสูงอัตโนมัติตามฟอนต์ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      padding-top: 14px;
+      border-top: 1.5px solid var(--border-color);
+    }
+
+    .stat-item {
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-sm);
+      background: var(--bg-muted);
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 4px;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: all 200ms var(--spring);
+      min-width: 0;
+    }
+
+    .stat-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-card);
+    }
+
+    .stat-item:active {
+      transform: scale(0.96);
+    }
+
+    .stat-item.stat-urgent-box {
+      background: var(--urgent-soft);
+      border-color: var(--urgent-border);
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: break-word;
+    }
+
+    .stat-value {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    .stat-urgent { color: var(--urgent); }
+    .stat-general { color: var(--general); }
+    .stat-success { color: var(--success); }
+
+    /* หัวข้อส่วนกรองบัญชี */
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    /* กล่องปุ่มเลือกบัญชี Gmail: ใช้ Grid ที่ขยายเต็มคำ ไม่บีบข้อความแหว่งเด็ดขาด! */
+    .accounts-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .account-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      min-height: 2.85rem;
+      height: auto;
+      padding: 0.55rem 0.9rem;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.35;
+      cursor: pointer;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: break-word;
+      transition: all 220ms var(--spring);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    }
+
+    .account-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .account-pill:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-card);
+    }
+
+    .account-pill:active {
+      transform: scale(0.96);
+    }
+
+    .account-pill.active {
+      color: #FFFFFF;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+    }
+
+    .account-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .pill-count {
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      background: var(--bg-hover);
+      color: var(--text-main);
+      flex-shrink: 0;
+    }
+
+    .account-pill.active .pill-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+    }
+
+    /* แถบกรองหมวดหมู่และช่องค้นหา (แยกบรรทัดชัดเจน ไม่เบียดกันจนข้อความแหว่ง) */
+    .filter-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .category-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+
+    .cat-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 2.75rem;
+      height: auto;
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.3;
+      cursor: pointer;
+      text-align: center;
+      white-space: normal;
+      transition: all 200ms var(--spring);
+    }
+
+    .cat-btn:hover {
+      transform: translateY(-2px);
+      background: var(--bg-muted);
+    }
+
+    .cat-btn:active {
+      transform: scale(0.96);
+    }
+
+    .cat-btn.active-all {
+      background: var(--hero-gradient);
+      color: #FFFFFF;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+    }
+
+    .cat-btn.active-urgent {
+      background: var(--urgent);
+      color: #FFFFFF;
+      border-color: var(--urgent);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    }
+
+    .cat-btn.active-general {
+      background: var(--general);
+      color: #FFFFFF;
+      border-color: var(--general);
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+    }
+
+    .cat-btn.active-promo {
+      background: var(--promo);
+      color: #FFFFFF;
+      border-color: var(--promo);
+    }
+
+    .search-group {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1 1 260px;
+      width: 100%;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      min-height: 2.85rem;
+      padding: 0.55rem 0.9rem 0.55rem 2.6rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    /* การ์ดอีเมล: รองรับการตัดคำทุกจุดเมื่อตัวอักษรใหญ่สุด 21px */
+    .email-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .email-card {
+      background: var(--bg-surface);
+      backdrop-filter: blur(10px);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      box-shadow: var(--shadow-card);
+      transition: transform 240ms var(--spring), box-shadow 240ms var(--spring), border-color 200ms ease, opacity 200ms ease;
+      animation: slideUpFade 420ms var(--spring) both;
+      position: relative;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .email-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--border-strong);
+    }
+
+    .email-card.priority-urgent {
+      border-color: var(--urgent-border);
+      border-left: 7px solid var(--urgent);
+      box-shadow: var(--shadow-urgent);
+    }
+
+    .email-card.priority-general {
+      border-left: 6px solid var(--general);
+    }
+
+    .email-card.priority-promo {
+      border-left: 6px solid var(--promo);
+    }
+
+    .email-card.is-done {
+      opacity: 0.58;
+      background: var(--bg-muted);
+      box-shadow: none;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 0;
+      flex: 1 1 220px;
+    }
+
+    .priority-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 0.28rem 0.7rem;
+      border-radius: 7px;
+      white-space: normal;
+    }
+
+    .priority-badge.urgent {
+      background: var(--urgent);
+      color: #FFFFFF;
+    }
+
+    .priority-badge.general {
+      background: var(--general-soft);
+      color: var(--general);
+      border: 1.5px solid var(--general-border);
+    }
+
+    .priority-badge.promo {
+      background: var(--promo-soft);
+      color: var(--promo);
+      border: 1.5px solid var(--promo-border);
+    }
+
+    .account-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      line-height: 1.35;
+      padding: 0.28rem 0.7rem;
+      border-radius: 7px;
+      color: #FFFFFF;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .time-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--bg-muted);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.48;
+      overflow-wrap: break-word;
+    }
+
+    .email-card.is-done .card-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .card-meta {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .summary-points {
+      list-style: none;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: var(--bg-muted);
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .summary-points li {
+      position: relative;
+      padding-left: 1.15rem;
+      font-size: 0.95rem;
+      line-height: 1.58;
+      color: var(--text-secondary);
+      overflow-wrap: break-word;
+    }
+
+    .summary-points li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .action-box {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--urgent-soft), var(--warning-soft));
+      border: 2px solid var(--urgent-border);
+      color: var(--urgent-strong);
+      font-size: 0.93rem;
+      font-weight: 800;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .action-box-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      flex-wrap: wrap;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .action-tag-pill {
+      background: var(--urgent);
+      color: #FFFFFF;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1.5px solid var(--border-color);
+      flex-wrap: wrap;
+    }
+
+    .card-actions-left,
+    .card-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      min-height: 2.5rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-check-urgent {
+      background: var(--success-bright);
+      color: #FFFFFF;
+      border-color: var(--success-bright);
+    }
+
+    .btn-done-active {
+      background: var(--success-soft);
+      color: var(--success);
+      border-color: var(--success-border);
+    }
+
+    /* หน้าต่าง Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-hover);
+      animation: modalPop 260ms var(--spring) both;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    /* กริดเลือกธีมเกรเดียนต์เคลื่อนไหว 6 แบบ */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .theme-swatch-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-color);
+      background: var(--bg-muted);
+      color: var(--text-main);
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: all 200ms var(--spring);
+      width: 100%;
+    }
+
+    .theme-swatch-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .theme-swatch-btn.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .swatch-preview {
+      width: 100%;
+      height: 32px;
+      border-radius: 7px;
+      background-size: 250% 250%;
+      animation: animatedGradientBg 5s ease infinite;
+    }
+
+    .swatch-name {
+      font-size: 0.86rem;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .swatch-desc {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* ปุ่มตัวเลือกฟอนต์และขนาดข้อความ */
+    .option-pills {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .opt-pill {
+      padding: 0.55rem 0.85rem;
+      min-height: 2.6rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-muted);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      line-height: 1.35;
+      cursor: pointer;
+      text-align: center;
+      white-space: normal;
+      transition: all 180ms var(--spring);
+    }
+
+    .opt-pill:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .opt-pill.active {
+      background: var(--hero-gradient);
+      color: #FFFFFF;
+      border-color: transparent;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+      height: 8px;
+      cursor: pointer;
+    }
+
+    .discord-preview-box {
+      background: var(--discord-bg);
+      color: #DBDEE1;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      overflow-wrap: break-word;
+    }
+
+    .discord-bot-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .discord-bot-name { font-weight: 700; color: #FFFFFF; }
+    .discord-bot-tag { background: #5865F2; color: #FFFFFF; font-size: 0.68rem; font-weight: 700; padding: 1px 5px; border-radius: 4px; }
+    .discord-embed { background: var(--discord-card); border-left: 4px solid #DC2626; border-radius: 4px; padding: 12px 14px; margin-top: 8px; }
+    .discord-embed-title { color: #FFFFFF; font-weight: 700; margin-bottom: 6px; }
+    .discord-embed-field { margin-top: 10px; }
+    .discord-embed-field-name { color: #FFFFFF; font-weight: 700; font-size: 0.84rem; margin-bottom: 3px; }
+    .discord-embed-field-val { font-size: 0.84rem; color: #B5BAC1; white-space: pre-line; overflow-wrap: anywhere; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 0.88rem; font-weight: 800; margin-bottom: 6px; color: var(--text-secondary); line-height: 1.4; }
+    .form-input {
+      width: 100%;
+      min-height: 2.75rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-muted);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .form-helper { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 16px;
+      right: 16px;
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--text-main);
+      color: var(--bg-surface);
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 8px;
+      z-index: 200;
+      box-shadow: var(--shadow-hover);
+      animation: modalPop 220ms var(--spring) both;
+    }
+
+    .toast-msg.show { display: flex; }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--bg-surface);
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      .top-actions .btn {
+        flex: 1 1 calc(50% - 6px);
+      }
+      .top-actions .btn-theme-customizer {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body data-hl-mode="vivid">
+  <div class="app-container" id="mainViewWrapper">
+    <!-- แถบส่วนหัวหลัก -->
+    <header class="top-bar">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </div>
+        <div class="brand-title">
+          <h1>Chris Mail Pulse</h1>
+          <div class="schedule-status">
+            <span class="status-dot"></span>
+            <span id="nextRunText">สรุปอัตโนมัติ 05:00 น. และ 18:00 น.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button type="button" class="btn btn-theme-customizer" id="btnOpenAppearance" onclick="openAppearanceModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+          </svg>
+          <span>ปรับธีม • ฟอนต์ • ขนาดตัวอักษร</span>
+        </button>
+
+        <button type="button" class="btn btn-primary" id="btnSyncNow" onclick="handleSyncNow()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+            <path d="M16 16h5v5" />
+          </svg>
+          <span>ดึงเมลใหม่</span>
+        </button>
+
+        <button type="button" class="btn btn-discord" id="btnOpenDiscord" onclick="openDiscordModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span>พรีวิว Discord</span>
+        </button>
+
+        <button type="button" class="btn" id="btnOpenSettings" onclick="openSettingsModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <span>บัญชี &amp; API</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- แถบเลือกช่วงเวลาสรุป: รอบเช้า 05:00 น. และ รอบเย็น 18:00 น. -->
+    <section class="slot-bar" aria-label="เลือกรอบเวลาสรุปอีเมล">
+      <button type="button" class="slot-tab active" id="tabMorning" onclick="switchSlot('05:00')">
+        <div class="slot-info">
+          <div class="slot-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v8" /><path d="m4.93 10.93 1.41 1.41" /><path d="M2 18h2" /><path d="M20 18h2" /><path d="m19.07 10.93-1.41 1.41" /><path d="M22 22H2" /><path d="m8 6 4-4 4 4" /><path d="M16 18a4 4 0 0 0-8 0" />
+            </svg>
+          </div>
+          <div>
+            <span class="slot-title">รอบเช้า • 05:00 น.</span>
+            <span class="slot-sub">สรุปเมลข้ามคืนก่อนคริสตื่น</span>
+          </div>
+        </div>
+        <span class="slot-badge" id="badgeCountMorning">7 ฉบับ</span>
+      </button>
+
+      <button type="button" class="slot-tab" id="tabEvening" onclick="switchSlot('18:00')">
+        <div class="slot-info">
+          <div class="slot-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 10V2" /><path d="m4.93 10.93 1.41 1.41" /><path d="M2 18h2" /><path d="M20 18h2" /><path d="m19.07 10.93-1.41 1.41" /><path d="M22 22H2" /><path d="m16 6-4 4-4-4" /><path d="M16 18a4 4 0 0 0-8 0" />
+            </svg>
+          </div>
+          <div>
+            <span class="slot-title">รอบเย็น • 18:00 น.</span>
+            <span class="slot-sub">สรุปเมลระหว่างวันหลังเลิกเรียน</span>
+          </div>
+        </div>
+        <span class="slot-badge" id="badgeCountEvening">4 ฉบับ</span>
+      </button>
+    </section>
+
+    <!-- พื้นที่เนื้อหาที่มีเอฟเฟกต์เปลี่ยนหน้า -->
+    <div id="animatedContentArea">
+      <!-- การ์ดสรุปภาพรวมจาก Gemini AI + กล่องเช็กลิสต์งานด่วนบนสุด -->
+      <section class="brief-card" aria-label="สรุปภาพรวมจาก AI">
+        <div class="brief-header">
+          <div class="brief-title-group">
+            <span class="ai-tag">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+              </svg>
+              <span>สรุปภาพรวมโดย Gemini 2.5 Flash</span>
+            </span>
+            <span id="digestTimestamp" class="time-label">อัปเดตล่าสุด วันนี้ 05:00 น.</span>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-sm" id="btnClearPromo" onclick="markAllPromoDone()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>เคลียร์โปรโมชันทั้งหมด</span>
+            </button>
+
+            <button type="button" class="btn btn-sm btn-primary" id="btnSpeakBrief" onclick="speakCurrentBrief()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+              <span id="speakBtnLabel">ฟังเสียงสรุป</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="brief-text" id="overviewText">กำลังโหลดข้อมูลสรุปอีเมล...</div>
+
+        <!-- กล่องเช็กลิสต์งานด่วนบนสุด -->
+        <div class="urgent-quick-box" id="urgentQuickBox"></div>
+
+        <!-- แถบความคืบหน้าการจัดการอีเมล -->
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="progressLabel">ความคืบหน้าการเคลียร์เมลรอบนี้</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- กล่องสถิติ 4 ช่อง -->
+        <div class="stats-grid">
+          <button type="button" class="stat-item" id="statBoxAll" onclick="setCategory('all')">
+            <span class="stat-label">อีเมลรอบนี้ทั้งหมด (กดดู)</span>
+            <span class="stat-value" id="statTotal">0</span>
+          </button>
+          <button type="button" class="stat-item stat-urgent-box" id="statBoxUrgent" onclick="setCategory('urgent')">
+            <span class="stat-label" style="color:var(--urgent);">สำคัญ / ต้องรีบทำ!</span>
+            <span class="stat-value stat-urgent" id="statUrgent">0</span>
+          </button>
+          <button type="button" class="stat-item" id="statBoxGeneral" onclick="setCategory('general')">
+            <span class="stat-label">ทั่วไป / อัปเดตระบบ</span>
+            <span class="stat-value stat-general" id="statGeneral">0</span>
+          </button>
+          <button type="button" class="stat-item" id="statBoxDone" onclick="toggleHideDone()">
+            <span class="stat-label">จัดการเสร็จแล้ว</span>
+            <span class="stat-value stat-success" id="statDone">0 / 0</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- แถบเลือกบัญชีอีเมลของคริส (แสดงชื่อบัญชีเต็มคำทุกปุ่ม ไม่โดนบีบแหว่ง) -->
+      <div class="section-label">
+        <span>1. เลือกบัญชี Gmail ของคริส</span>
+        <span id="activeAccountLabel">แสดงทุกบัญชี</span>
+      </div>
+      <div class="accounts-strip" id="accountsStrip" role="tablist"></div>
+
+      <!-- แถบกรองหมวดหมู่ความสำคัญและค้นหา -->
+      <div class="section-label">
+        <span>2. เลือกหมวดความสำคัญ &amp; ค้นหาด่วน</span>
+      </div>
+      <div class="filter-toolbar">
+        <div class="category-tabs">
+          <button type="button" class="cat-btn active-all" id="catAll" onclick="setCategory('all')">ทั้งหมด</button>
+          <button type="button" class="cat-btn" id="catUrgent" onclick="setCategory('urgent')">สำคัญ / ด่วน</button>
+          <button type="button" class="cat-btn" id="catGeneral" onclick="setCategory('general')">ทั่วไป / ระบบ</button>
+          <button type="button" class="cat-btn" id="catPromo" onclick="setCategory('promo')">โปรโมชัน</button>
+        </div>
+
+        <div class="search-group">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input type="search" id="searchInput" class="search-input" placeholder="ค้นหาหัวข้อ, วิชา, งานที่ต้องทำ..." oninput="renderEmails()" />
+          </div>
+
+          <button type="button" class="btn btn-sm" id="btnHideDone" onclick="toggleHideDone()">
+            <span id="hideDoneLabel">ซ่อนที่ทำเสร็จ: ปิด</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- รายการอีเมลที่สรุปแล้ว -->
+      <main class="email-list" id="emailListContainer"></main>
+    </div>
+  </div>
+
+  <!-- หน้าต่าง Modal: ตั้งค่าปรับธีมเกรเดียนต์เคลื่อนไหว ฟอนต์ ขนาดตัวอักษร และไฮไลต์ข้อความ -->
+  <div class="modal-backdrop" id="appearanceModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>ปรับแต่งธีมเกรเดียนต์เคลื่อนไหว • ฟอนต์ • ขนาดข้อความ</h2>
+        <button type="button" class="btn btn-sm" onclick="closeAppearanceModal()">ปิด</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">1. เลือกธีมเกรเดียนต์เคลื่อนไหว (Animated Gradient Themes)</label>
+        <div class="theme-grid" id="themeGrid">
+          <button type="button" class="theme-swatch-btn active" data-theme-id="cyber" onclick="setAnimatedTheme('cyber')">
+            <div class="swatch-preview" style="background: linear-gradient(135deg, #1D4ED8, #38BDF8, #DBEAFE);"></div>
+            <span class="swatch-name">Cyber Ocean</span>
+            <span class="swatch-desc">น้ำเงิน-ฟ้าไซเบอร์</span>
+          </button>
+
+          <button type="button" class="theme-swatch-btn" data-theme-id="sunset" onclick="setAnimatedTheme('sunset')">
+            <div class="swatch-preview" style="background: linear-gradient(135deg, #DC2626, #EA580C, #FDE047);"></div>
+            <span class="swatch-name">Sunset Ember</span>
+            <span class="swatch-desc">ตะวันรุ่งส้ม-ทอง-แดง</span>
+          </button>
+
+          <button type="button" class="theme-swatch-btn" data-theme-id="aurora" onclick="setAnimatedTheme('aurora')">
+            <div class="swatch-preview" style="background: linear-gradient(135deg, #047857, #10B981, #38BDF8);"></div>
+            <span class="swatch-name">Aurora Emerald</span>
+            <span class="swatch-desc">แสงเหนือเขียวมรกต</span>
+          </button>
+
+          <button type="button" class="theme-swatch-btn" data-theme-id="midnight" onclick="setAnimatedTheme('midnight')">
+            <div class="swatch-preview" style="background: linear-gradient(135deg, #030712, #1D4ED8, #06B6D4);"></div>
+            <span class="swatch-name">Midnight Nebula</span>
+            <span class="swatch-desc">โหมดมืดอวกาศนีออน</span>
+          </button>
+
+          <button type="button" class="theme-swatch-btn" data-theme-id="crimson" onclick="setAnimatedTheme('crimson')">
+            <div class="swatch-preview" style="background: linear-gradient(135deg, #09090B, #991B1B, #F97316);"></div>
+            <span class="swatch-name">Crimson Gaming</span>
+            <span class="swatch-desc">โหมดมืดแดงเพลิงดุดัน</span>
+          </button>
+
+          <button type="button" class="theme-swatch-btn" data-theme-id="solar" onclick="setAnimatedTheme('solar')">
+            <div class="swatch-preview" style="background: linear-gradient(135deg, #0F172A, #64748B, #F8FAFC);"></div>
+            <span class="swatch-name">Solar Clean</span>
+            <span class="swatch-desc">สว่างคลีนมินิมอล</span>
+          </button>
+        </div>
+
+        <label class="form-label">ความเร็วการเคลื่อนไหวของเกรเดียนต์</label>
+        <div class="option-pills" id="speedPills">
+          <button type="button" class="opt-pill" data-speed="4s" onclick="setGradientSpeed('4s')">พริ้วเร็ว (4 วินาที)</button>
+          <button type="button" class="opt-pill active" data-speed="11s" onclick="setGradientSpeed('11s')">ลื่นไหลปกติ (11 วินาที)</button>
+          <button type="button" class="opt-pill" data-speed="20s" onclick="setGradientSpeed('20s')">ช้าผ่อนคลาย (20 วินาที)</button>
+          <button type="button" class="opt-pill" data-speed="paused" onclick="setGradientSpeed('paused')">หยุดนิ่ง</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">2. เลือกรูปแบบฟอนต์ (Font Family)</label>
+        <div class="option-pills" id="fontPills">
+          <button type="button" class="opt-pill active" data-font="modern" onclick="setFontFamily('modern')">โมเดิร์นคมชัด (IBM Plex / Jakarta)</button>
+          <button type="button" class="opt-pill" data-font="sarabun" onclick="setFontFamily('sarabun')">ทางการอ่านง่าย (Sarabun Style)</button>
+          <button type="button" class="opt-pill" data-font="kanit" onclick="setFontFamily('kanit')">หัวข้อเท่ทันสมัย (Kanit Style)</button>
+          <button type="button" class="opt-pill" data-font="mono" onclick="setFontFamily('mono')">สายโค้ด/นักพัฒนา (JetBrains Mono)</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">3. ขนาดตัวอักษร (<span id="fontSizeReadout">16px (มาตรฐาน)</span>)</label>
+        <div class="slider-row">
+          <span style="font-size:0.85rem; font-weight:800;">A-</span>
+          <input type="range" id="fontSizeSlider" min="13" max="21" step="1" value="16" oninput="setFontSize(this.value)" />
+          <span style="font-size:1.2rem; font-weight:800;">A+</span>
+        </div>
+        <div class="option-pills" id="sizePills">
+          <button type="button" class="opt-pill" data-size="14" onclick="setFontSize(14)">กะทัดรัด (14px)</button>
+          <button type="button" class="opt-pill active" data-size="16" onclick="setFontSize(16)">มาตรฐาน (16px)</button>
+          <button type="button" class="opt-pill" data-size="18" onclick="setFontSize(18)">ใหญ่ชัดเจน (18px)</button>
+          <button type="button" class="opt-pill" data-size="20" onclick="setFontSize(20)">ใหญ่มากพิเศษ (20px)</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">4. ความเข้มข้อความ &amp; รูปแบบสีไฮไลต์คำสำคัญ</label>
+        <div class="option-pills" id="hlModePills">
+          <button type="button" class="opt-pill active" data-hl="vivid" onclick="setHighlightMode('vivid')">สีแน่นเต็มขั้น (ป้ายทึบสีสด)</button>
+          <button type="button" class="opt-pill" data-hl="soft" onclick="setHighlightMode('soft')">สีนุ่มขอบเข้ม (Pastel Box)</button>
+          <button type="button" class="opt-pill" data-hl="underline" onclick="setHighlightMode('underline')">ขีดเส้นใต้สีสด (Underline)</button>
+        </div>
+
+        <label class="form-label" for="customKeywordsInput">เพิ่มคำสำคัญที่อยากให้ไฮไลต์สีแดงสดอัตโนมัติ (คั่นด้วยจุลภาค ,)</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <input type="text" id="customKeywordsInput" class="form-input" style="flex:1 1 200px;" placeholder="เช่น สอบปลายภาค, อาจารย์, โอนเงิน" />
+          <button type="button" class="btn btn-primary" onclick="saveCustomKeywords()">บันทึกคำ</button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; padding-top: 12px; border-top: 1.5px solid var(--border-color); flex-wrap: wrap;">
+        <button type="button" class="btn" onclick="resetAppearanceDefaults()">รีเซ็ตค่าเริ่มต้น</button>
+        <button type="button" class="btn btn-primary" onclick="closeAppearanceModal()">เสร็จสิ้น</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- หน้าต่าง Modal: พรีวิวและทดสอบส่งแจ้งเตือนเข้า Discord -->
+  <div class="modal-backdrop" id="discordModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>พรีวิว &amp; ทดสอบแจ้งเตือน Discord (05:00 และ 18:00 น.)</h2>
+        <button type="button" class="btn btn-sm" onclick="closeDiscordModal()">ปิด</button>
+      </div>
+
+      <p class="form-helper" style="margin-bottom: 10px;">
+        หน้าตาข้อความที่ระบบจะส่งเข้าห้อง Discord ของคริสอัตโนมัติทุกเวลา <strong>05:00 น.</strong> และ <strong>18:00 น.</strong>:
+      </p>
+
+      <div class="discord-preview-box">
+        <div class="discord-bot-head">
+          <span class="discord-bot-name">Chris Mail Pulse</span>
+          <span class="discord-bot-tag">APP</span>
+          <span style="font-size: 0.75rem; color: #949BA4;">วันนี้ เวลา <span id="discordPreviewTime">05:00</span> น.</span>
+        </div>
+        <div id="discordPreviewHeadline" style="margin-bottom: 6px;"></div>
+        <div class="discord-embed">
+          <div class="discord-embed-title" id="discordPreviewTitle"></div>
+          <div style="font-size: 0.84rem; color: #DBDEE1;" id="discordPreviewDesc"></div>
+          <div class="discord-embed-field">
+            <div class="discord-embed-field-name">สำคัญ / ต้องจัดการ</div>
+            <div class="discord-embed-field-val" id="discordPreviewUrgent"></div>
+          </div>
+          <div class="discord-embed-field">
+            <div class="discord-embed-field-name">ทั่วไป / อัปเดตระบบ</div>
+            <div class="discord-embed-field-val" id="discordPreviewGeneral"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="discordWebhookInput">วาง Discord Webhook URL เพื่อทดสอบยิงเข้าห้องแชทจริงทันที</label>
+        <input type="url" id="discordWebhookInput" class="form-input" placeholder="https://discord.com/api/webhooks/..." />
+        <p class="form-helper">เข้าห้อง Discord ของคริส &rarr; Edit Channel &rarr; Integrations &rarr; Webhooks &rarr; Copy Webhook URL</p>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+        <button type="button" class="btn" onclick="closeDiscordModal()">ยกเลิก</button>
+        <button type="button" class="btn btn-discord" onclick="sendTestDiscordWebhook()">
+          <span>ยิงสรุปรอบนี้เข้า Discord ทันที</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- หน้าต่าง Modal: ตั้งค่าระบบและจัดการบัญชี Gmail -->
+  <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>ตั้งค่าระบบ &amp; จัดการบัญชี Gmail ของคริส</h2>
+        <button type="button" class="btn btn-sm" onclick="closeSettingsModal()">ปิด</button>
+      </div>
+
+      <div class="form-group" style="background:var(--bg-muted); padding:12px; border-radius:var(--radius-sm); border:1.5px solid var(--border-color);">
+        <label class="form-label">คัดลอกโค้ดไปวางใน Google Apps Script (คลิกเดียวจบ)</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
+          <button type="button" class="btn btn-sm btn-primary" onclick="copyRepoFile('Code.gs')">คัดลอกโค้ด Code.gs</button>
+          <button type="button" class="btn btn-sm" onclick="copyRepoFile('index.html')">คัดลอกโค้ด index.html</button>
+          <a href="https://script.google.com" target="_blank" rel="noopener" class="btn btn-sm">เปิด script.google.com</a>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="gasWebAppUrlInput">ลิงก์ Google Apps Script Web App URL (ใช้ซิงก์ข้อมูลจริงขึ้นหน้าเว็บนี้)</label>
+        <input type="url" id="gasWebAppUrlInput" class="form-input" placeholder="https://script.google.com/macros/s/.../exec" />
+        <p class="form-helper">เมื่อ Deploy บน Google Apps Script แล้ว นำลิงก์ Web App มาวางช่องนี้เพื่อให้หน้าเว็บดึงเมลจริงอัตโนมัติ</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="geminiKeyInput">Gemini API Key (Free Tier จาก Google AI Studio)</label>
+        <input type="password" id="geminiKeyInput" class="form-input" placeholder="AIzaSy..." />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="settingsWebhookInput">Discord Webhook URL (สำหรับแจ้งเตือน 05:00 และ 18:00 น.)</label>
+        <input type="url" id="settingsWebhookInput" class="form-input" placeholder="https://discord.com/api/webhooks/..." />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="newAccountInput">เพิ่มชื่อบัญชี Gmail ที่ต้องการแยกสีป้ายกำกับ</label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <input type="text" id="newAccountInput" class="form-input" style="flex:1 1 200px;" placeholder="เช่น chris.backup@gmail.com (เมลสำรอง)" />
+          <button type="button" class="btn btn-primary" onclick="addCustomAccount()">เพิ่มบัญชี</button>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap;">
+        <button type="button" class="btn" onclick="closeSettingsModal()">ปิด</button>
+        <button type="button" class="btn btn-primary" onclick="saveSettings()">บันทึกการตั้งค่า</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- แถบแจ้งเตือนสถานะ -->
+  <div class="toast-msg" id="toastMsg" role="status" aria-live="polite"></div>
+
+  <script>
+    // รายชื่อบัญชี Gmail ของคริส พร้อมสีประจำบัญชีที่สดชัดเจน
+    const DEFAULT_ACCOUNTS = [
+      { email: 'chris.main@gmail.com', label: 'เมลหลัก (Main)', color: '#1D4ED8' },
+      { email: 'chris.sbt11@gmail.com', label: 'เมลเรียน (สบค.11)', color: '#DC2626' },
+      { email: 'chris.gamedev@gmail.com', label: 'เมลทำเกม (Unity/Git)', color: '#047857' },
+      { email: 'chris.shop@gmail.com', label: 'เมลทั่วไป/ช้อปปิ้ง', color: '#B45309' }
+    ];
+
+    // ชุดฟอนต์ให้คริสเลือกสลับได้ทันที
+    const FONT_MAP = {
+      modern: "'IBM Plex Sans Thai', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+      sarabun: "'Sarabun', 'TH SarabunPSK', Tahoma, sans-serif",
+      kanit: "'Kanit', 'Prompt', -apple-system, sans-serif",
+      mono: "'JetBrains Mono', 'IBM Plex Sans Thai', monospace"
+    };
+
+    // ข้อมูลจำลองรอบเช้า 05:00 น. และรอบเย็น 18:00 น.
+    const SAMPLE_DIGESTS = {
+      '05:00': {
+        slot: '05:00',
+        slotTitle: 'รอบเช้า (05:00 น.)',
+        date: '2026-11-26',
+        createdAt: 'วันนี้ 05:00 น.',
+        overview: 'อรุณสวัสดิ์ครับคริส! รอบเช้า 05:00 น. มีอีเมลเข้าใหม่ 7 ฉบับจาก 4 บัญชี — มีเรื่องด่วน 2 เรื่องคือ "นัดส่งเล่มรายงานบทที่ 3 ภายในวันศุกร์นี้ก่อน 16:00 น." และ "แจ้งเตือนความปลอดภัย GitHub Token หมดอายุใน 3 วัน" ส่วนที่เหลือเป็นอัปเดต Unity และโปรโมชันทั่วไปครับ',
+        items: [
+          {
+            id: 'm_101',
+            account: 'chris.sbt11@gmail.com',
+            sender: 'อาจารย์ที่ปรึกษา สาขาเทคโนโลยีธุรกิจดิจิทัล <advisor@lps-tech.ac.th>',
+            originalSubject: '[ด่วน] แจ้งกำหนดส่งบทที่ 3 และตรวจรูปแบบฟอนต์ TH SarabunPSK 16',
+            timestamp: '04:15',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'urgent',
+            summaryTitle: 'อาจารย์แจ้งส่งเล่มรายงานบทที่ 3 ภายในวันศุกร์นี้ ก่อน 16:00 น.',
+            summaryPoints: [
+              'ต้องใช้ฟอนต์ TH SarabunPSK ขนาด 16 เท่านั้น และห้ามตารางขาดข้ามหน้า',
+              'ให้ส่งทั้งไฟล์ Word (.docx) และไฟล์ PDF เข้าโฟลเดอร์ Google Drive ของห้อง สบค.11'
+            ],
+            actionItem: 'ตรวจตารางบทที่ 3 และส่งไฟล์ PDF + Word (.docx) ก่อนวันศุกร์นี้ 16:00 น.',
+            done: false
+          },
+          {
+            id: 'm_102',
+            account: 'chris.gamedev@gmail.com',
+            sender: 'GitHub Security <noreply@github.com>',
+            originalSubject: '[GitHub] Personal access token expiring in 3 days',
+            timestamp: '02:40',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'urgent',
+            summaryTitle: 'ด่วน! GitHub แจ้งเตือน Token ซิงก์โค้ดจะหมดอายุใน 3 วัน (29 พ.ย.)',
+            summaryPoints: [
+              'Personal Access Token ที่เชื่อมกับเครื่อง DESKTOP-U0AMFJ7 จะหมดอายุวันที่ 29 พ.ย.',
+              'หากไม่ต่ออายุจะไม่สามารถ git push โค้ดขึ้นรีโปได้'
+            ],
+            actionItem: 'กด Regenerate Token ในหน้า GitHub Settings ก่อนวันที่ 29 พ.ย.',
+            done: false
+          },
+          {
+            id: 'm_103',
+            account: 'chris.main@gmail.com',
+            sender: 'Google Cloud & AI Studio <google-ai-noreply@google.com>',
+            originalSubject: 'Your Gemini API Free Tier monthly usage summary',
+            timestamp: '03:10',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'general',
+            summaryTitle: 'สรุปโควตา Gemini API Free Tier — ใช้งานฟรี 100% ยอดค่าใช้จ่าย 0 บาท',
+            summaryPoints: [
+              'การใช้โมเดล gemini-2.5-flash อยู่ในเกณฑ์ฟรี 100% ยอดบิล 0 บาท',
+              'โควตาคงเหลือเพียงพอสำหรับรันสรุปอีเมลทุกวัน'
+            ],
+            actionItem: '',
+            done: false
+          },
+          {
+            id: 'm_104',
+            account: 'chris.gamedev@gmail.com',
+            sender: 'Unity Technologies <no-reply@unity3d.com>',
+            originalSubject: 'Unity 6 LTS patch update & 2D Pixel Art package update',
+            timestamp: '01:20',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'general',
+            summaryTitle: 'Unity ปล่อยอัปเดตแพตช์เสถียรภาพสำหรับ GTX 1050 Ti และระบบ 2D',
+            summaryPoints: [
+              'ลดการใช้ VRAM บนการ์ดจอ 4GB (เหมาะกับ GTX 1050 Ti ของคริส)',
+              'สามารถกดอัปเดตผ่าน Unity Hub ได้เมื่อสะดวก'
+            ],
+            actionItem: '',
+            done: false
+          },
+          {
+            id: 'm_105',
+            account: 'chris.main@gmail.com',
+            sender: 'Google Drive <drive-shares-dm-noreply@google.com>',
+            originalSubject: 'เพื่อนร่วมชั้น สบค.11 แชร์โฟลเดอร์ "รวมภาพกิจกรรมวิทยาลัย" กับคุณ',
+            timestamp: '00:45',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'general',
+            summaryTitle: 'เพื่อนห้อง สบค.11 แชร์โฟลเดอร์รูปภาพกิจกรรมเข้า Google Drive',
+            summaryPoints: [
+              'มีไฟล์รูปภาพ 24 ไฟล์สำหรับนำไปใส่ภาคผนวกในเล่มรายงาน'
+            ],
+            actionItem: '',
+            done: true
+          },
+          {
+            id: 'm_106',
+            account: 'chris.shop@gmail.com',
+            sender: 'Steam Store <noreply@steampowered.com>',
+            originalSubject: 'เกมใน Wishlist ของคุณกำลังลดราคา Autumn Sale!',
+            timestamp: '04:02',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'promo',
+            summaryTitle: 'Steam Autumn Sale ลดราคาเกมอินดี้และโปรแกรมทำเกม 50-75%',
+            summaryPoints: [
+              'โปรโมชันลดราคา 50-75% หมดเขตสัปดาห์หน้า ไม่มีความเร่งด่วน'
+            ],
+            actionItem: '',
+            done: false
+          },
+          {
+            id: 'm_107',
+            account: 'chris.shop@gmail.com',
+            sender: 'Shopee Thailand <info@mail.shopee.co.th>',
+            originalSubject: 'แจกโค้ดส่งฟรีประจำวันและส่วนลดอุปกรณ์คอมพิวเตอร์',
+            timestamp: '04:30',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'promo',
+            summaryTitle: 'โฆษณาโค้ดส่งฟรีประจำวันจาก Shopee (ไม่มีรายการคำสั่งซื้อค้าง)',
+            summaryPoints: [
+              'จดหมายข่าวการตลาดทั่วไป ข้ามได้เลย'
+            ],
+            actionItem: '',
+            done: false
+          }
+        ]
+      },
+      '18:00': {
+        slot: '18:00',
+        slotTitle: 'รอบเย็น (18:00 น.)',
+        date: '2026-11-25',
+        createdAt: 'เมื่อวาน 18:00 น.',
+        overview: 'สรุปรอบเย็น 18:00 น. มีอีเมลเข้ามาระหว่างวัน 4 ฉบับ — เรื่องด่วน 1 เรื่องคือ "ประกาศตารางสอบปฏิบัติภาษา C ห้อง สบค.11 วันจันทร์หน้า เวลา 09:00 น." ส่วนอีก 3 ฉบับเป็นแจ้งเตือน Build APK Android และข่าวสารทั่วไปครับ',
+        items: [
+          {
+            id: 'e_201',
+            account: 'chris.sbt11@gmail.com',
+            sender: 'งานทะเบียนและวัดผล <reg@lps-tech.ac.th>',
+            originalSubject: 'ประกาศตารางสอบปฏิบัติวิชาการเขียนโปรแกรมภาษา C (ห้อง สบค.11)',
+            timestamp: '15:30',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'urgent',
+            summaryTitle: 'ด่วน! ประกาศตารางสอบปฏิบัติภาษา C ห้อง สบค.11 วันจันทร์หน้า เวลา 09:00 น.',
+            summaryPoints: [
+              'สอบเขียนโปรแกรมภาษา C เรื่องคำสั่งเงื่อนไขและลูป วันจันทร์หน้า เวลา 09:00 น.',
+              'ให้นำบัตรนักศึกษามาแสดงก่อนเข้าห้องสอบ'
+            ],
+            actionItem: 'ทบทวนโค้ดภาษา C เรื่องลูปและเตรียมบัตรนักศึกษาก่อนวันจันทร์หน้า 09:00 น.',
+            done: false
+          },
+          {
+            id: 'e_202',
+            account: 'chris.gamedev@gmail.com',
+            sender: 'GitHub Actions <notifications@github.com>',
+            originalSubject: '[chrisandkoya-cmyk] Run succeeded: Android Kotlin Compose APK build',
+            timestamp: '16:45',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'general',
+            summaryTitle: 'GitHub Actions สร้างไฟล์ APK แอพ Android (Kotlin Compose) สำเร็จ 100%',
+            summaryPoints: [
+              'Build APK ผ่านฟรี 100% พร้อมดาวน์โหลดลง Xiaomi 14 ได้ทันที'
+            ],
+            actionItem: '',
+            done: true
+          },
+          {
+            id: 'e_203',
+            account: 'chris.main@gmail.com',
+            sender: 'Discord <noreply@discord.com>',
+            originalSubject: 'สรุปข้อความใหม่ในเซิร์ฟเวอร์นักพัฒนาเกม Unity & Godot',
+            timestamp: '17:10',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'general',
+            summaryTitle: 'อัปเดตกระทู้พูดคุยเทคนิคทำเกม 2D ในกลุ่ม Unity & Godot',
+            summaryPoints: [
+              'มีการแชร์เทคนิคจัดแสง 2D และ Shader เบาเครื่องสำหรับ GTX 1050 Ti'
+            ],
+            actionItem: '',
+            done: false
+          },
+          {
+            id: 'e_204',
+            account: 'chris.shop@gmail.com',
+            sender: 'Canva <no-reply@canva.com>',
+            originalSubject: 'เทมเพลตพรีเซนเทชันใหม่ประจำสัปดาห์',
+            timestamp: '14:05',
+            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
+            category: 'promo',
+            summaryTitle: 'แนะนำเทมเพลตสไลด์ใหม่จาก Canva (จดหมายข่าวทั่วไป)',
+            summaryPoints: [
+              'ไม่มีข้อความสำคัญ ข้ามได้'
+            ],
+            actionItem: '',
+            done: false
+          }
+        ]
+      }
+    };
+
+    let state = {
+      currentSlot: '05:00',
+      selectedAccount: 'all',
+      selectedCategory: 'all',
+      hideDone: false,
+      theme: localStorage.getItem('cmp_theme_id') || 'cyber',
+      gradientSpeed: localStorage.getItem('cmp_grad_speed') || '11s',
+      fontKey: localStorage.getItem('cmp_font_key') || 'modern',
+      fontSize: Number(localStorage.getItem('cmp_font_size') || 16),
+      hlMode: localStorage.getItem('cmp_hl_mode') || 'vivid',
+      customKeywords: localStorage.getItem('cmp_custom_kw') || '',
+      accounts: JSON.parse(localStorage.getItem('cmp_accounts_v2') || 'null') || DEFAULT_ACCOUNTS,
+      digests: JSON.parse(localStorage.getItem('cmp_digests_v2') || 'null') || SAMPLE_DIGESTS,
+      webhookUrl: localStorage.getItem('cmp_discord_webhook') || ''
+    };
+
+    /**
+     * เอฟเฟกต์คลื่นแสงเวลาแตะปุ่ม โดยสร้างที่ระดับ body เพื่อไม่ให้ปุ่มต้องใช้ overflow:hidden ที่บีบข้อความ
+     */
+    function attachGlobalRippleEffect() {
+      document.addEventListener('pointerdown', function(e) {
+        const target = e.target.closest('.btn, .slot-tab, .account-pill, .cat-btn, .stat-item, .theme-swatch-btn, .opt-pill');
+        if (!target) return;
+
+        const dot = document.createElement('span');
+        dot.className = 'click-burst-dot';
+        dot.style.left = e.clientX + 'px';
+        dot.style.top = e.clientY + 'px';
+        document.body.appendChild(dot);
+        setTimeout(function() {
+          if (dot.parentNode) dot.parentNode.removeChild(dot);
+        }, 480);
+      });
+    }
+
+    /**
+     * เล่นแอนิเมชันตอนเปลี่ยนหน้า / สลับรอบ / สลับบัญชี
+     */
+    function triggerPageTransition() {
+      const area = document.getElementById('animatedContentArea');
+      if (!area) return;
+      area.classList.remove('page-transition-active');
+      void area.offsetWidth;
+      area.classList.add('page-transition-active');
+    }
+
+    /**
+     * ไฮไลต์คำสำคัญด้วยสีเข้มเด่นชัดอัตโนมัติ
+     */
+    function highlightImportantText(rawText) {
+      let safe = escapeHtml(rawText);
+
+      safe = safe.replace(/(ด่วน!|ด่วน|เรื่องด่วน \d+ เรื่อง|เรื่องด่วน \d+ ฉบับ|หมดอายุใน \d+ วัน)/g, '<span class="hl-urgent">$1</span>');
+      safe = safe.replace(/(ภายในวันศุกร์นี้|ก่อนวันศุกร์นี้|วันศุกร์นี้|วันจันทร์หน้า|วันที่ 29 พ\.ย\.|29 พ\.ย\.|ก่อน \d{2}:\d{2} น\.|เวลา \d{2}:\d{2} น\.|\d{2}:\d{2} น\.)/g, '<span class="hl-deadline">$1</span>');
+      safe = safe.replace(/(สบค\.11|บทที่ 3|TH SarabunPSK ขนาด 16|ภาษา C|Word \(\.docx\)|PDF|DESKTOP-U0AMFJ7|GTX 1050 Ti|Xiaomi 14|Unity|GitHub|APK)/g, '<span class="hl-academic">$1</span>');
+      safe = safe.replace(/(ฟรี 100%|0 บาท|สำเร็จ 100%|50-75%)/g, '<span class="hl-money">$1</span>');
+
+      if (state.customKeywords) {
+        const words = state.customKeywords.split(',').map(function(w) { return w.trim(); }).filter(Boolean);
+        words.forEach(function(word) {
+          const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const rx = new RegExp('(' + escapedWord + ')', 'gi');
+          safe = safe.replace(rx, '<span class="hl-urgent">$1</span>');
+        });
+      }
+
+      return safe;
+    }
+
+    /**
+     * โหลดและใช้ค่าการตกแต่งทั้งหมด (ธีมเกรเดียนต์เคลื่อนไหว, ฟอนต์, ขนาดตัวอักษร, สไตล์ไฮไลต์)
+     */
+    function applyAppearanceSettings() {
+      document.documentElement.setAttribute('data-theme', state.theme);
+      document.documentElement.style.setProperty('--base-font-size', state.fontSize + 'px');
+      document.documentElement.style.setProperty('--font-family-main', FONT_MAP[state.fontKey] || FONT_MAP.modern);
+      document.body.setAttribute('data-hl-mode', state.hlMode);
+
+      if (state.gradientSpeed === 'paused') {
+        document.body.classList.add('motion-paused');
+      } else {
+        document.body.classList.remove('motion-paused');
+        document.documentElement.style.setProperty('--gradient-speed', state.gradientSpeed);
+      }
+
+      document.querySelectorAll('#themeGrid .theme-swatch-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-theme-id') === state.theme);
+      });
+      document.querySelectorAll('#speedPills .opt-pill').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-speed') === state.gradientSpeed);
+      });
+      document.querySelectorAll('#fontPills .opt-pill').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-font') === state.fontKey);
+      });
+      document.querySelectorAll('#sizePills .opt-pill').forEach(function(btn) {
+        btn.classList.toggle('active', Number(btn.getAttribute('data-size')) === Number(state.fontSize));
+      });
+      document.querySelectorAll('#hlModePills .opt-pill').forEach(function(btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-hl') === state.hlMode);
+      });
+
+      const slider = document.getElementById('fontSizeSlider');
+      if (slider) slider.value = state.fontSize;
+      const readout = document.getElementById('fontSizeReadout');
+      if (readout) readout.textContent = state.fontSize + 'px';
+      const kwInput = document.getElementById('customKeywordsInput');
+      if (kwInput) kwInput.value = state.customKeywords;
+    }
+
+    function setAnimatedTheme(themeId) {
+      state.theme = themeId;
+      localStorage.setItem('cmp_theme_id', themeId);
+      applyAppearanceSettings();
+      triggerPageTransition();
+      showToast('เปลี่ยนเป็นธีมเกรเดียนต์เคลื่อนไหว: ' + themeId.toUpperCase());
+    }
+
+    function setGradientSpeed(speed) {
+      state.gradientSpeed = speed;
+      localStorage.setItem('cmp_grad_speed', speed);
+      applyAppearanceSettings();
+      showToast(speed === 'paused' ? 'หยุดการเคลื่อนไหวพื้นหลังแล้ว' : 'ตั้งความเร็วเกรเดียนต์เป็น ' + speed);
+    }
+
+    function setFontFamily(fontKey) {
+      state.fontKey = fontKey;
+      localStorage.setItem('cmp_font_key', fontKey);
+      applyAppearanceSettings();
+      showToast('เปลี่ยนรูปแบบฟอนต์เรียบร้อยแล้ว');
+    }
+
+    function setFontSize(sizePx) {
+      state.fontSize = Number(sizePx);
+      localStorage.setItem('cmp_font_size', String(state.fontSize));
+      applyAppearanceSettings();
+    }
+
+    function setHighlightMode(mode) {
+      state.hlMode = mode;
+      localStorage.setItem('cmp_hl_mode', mode);
+      applyAppearanceSettings();
+      showToast('เปลี่ยนรูปแบบไฮไลต์คำสำคัญเป็น: ' + mode);
+    }
+
+    function saveCustomKeywords() {
+      const val = (document.getElementById('customKeywordsInput').value || '').trim();
+      state.customKeywords = val;
+      localStorage.setItem('cmp_custom_kw', val);
+      renderAll();
+      showToast(val ? 'เพิ่มคำไฮไลต์สีแดงสด: ' + val : 'ล้างคำไฮไลต์เพิ่มเติมแล้ว');
+    }
+
+    function resetAppearanceDefaults() {
+      state.theme = 'cyber';
+      state.gradientSpeed = '11s';
+      state.fontKey = 'modern';
+      state.fontSize = 16;
+      state.hlMode = 'vivid';
+      state.customKeywords = '';
+      localStorage.removeItem('cmp_theme_id');
+      localStorage.removeItem('cmp_grad_speed');
+      localStorage.removeItem('cmp_font_key');
+      localStorage.removeItem('cmp_font_size');
+      localStorage.removeItem('cmp_hl_mode');
+      localStorage.removeItem('cmp_custom_kw');
+      applyAppearanceSettings();
+      renderAll();
+      showToast('รีเซ็ตธีม ฟอนต์ และขนาดตัวอักษรกลับเป็นค่าเริ่มต้นแล้ว');
+    }
+
+    function openAppearanceModal() {
+      applyAppearanceSettings();
+      document.getElementById('appearanceModal').classList.add('open');
+    }
+
+    function closeAppearanceModal() {
+      document.getElementById('appearanceModal').classList.remove('open');
+    }
+
+    function initApp() {
+      attachGlobalRippleEffect();
+      applyAppearanceSettings();
+      updateNextRunCountdown();
+      setInterval(updateNextRunCountdown, 30000);
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(function(res) {
+          if (res && res.success && res.digests && res.digests.length > 0) {
+            res.digests.forEach(function(d) {
+              state.digests[d.slot || '05:00'] = d;
+            });
+            renderAll();
+          }
+        }).getDashboardData();
+      } else {
+        const savedGasUrl = localStorage.getItem('cmp_gas_webapp_url');
+        if (savedGasUrl) fetchFromExternalGasUrl(savedGasUrl);
+      }
+
+      renderAll();
+    }
+
+    function updateNextRunCountdown() {
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      let nextLabel = '';
+      if (h < 5) {
+        nextLabel = 'รอบถัดไป: 05:00 น. (อีก ' + (4 - h) + ' ชม. ' + (60 - m) + ' นาที)';
+      } else if (h < 18) {
+        nextLabel = 'รอบถัดไป: 18:00 น. (อีก ' + (17 - h) + ' ชม. ' + (60 - m) + ' นาที)';
+      } else {
+        nextLabel = 'รอบถัดไป: พรุ่งนี้ 05:00 น. (อีก ' + (28 - h) + ' ชม. ' + (60 - m) + ' นาที)';
+      }
+      document.getElementById('nextRunText').textContent = 'ทำงานอัตโนมัติ 05:00 & 18:00 น. • ' + nextLabel;
+    }
+
+    function switchSlot(slot) {
+      state.currentSlot = slot;
+      document.getElementById('tabMorning').classList.toggle('active', slot === '05:00');
+      document.getElementById('tabEvening').classList.toggle('active', slot === '18:00');
+      triggerPageTransition();
+      renderAll();
+    }
+
+    function selectAccount(accountEmail) {
+      state.selectedAccount = accountEmail;
+      triggerPageTransition();
+      renderAll();
+    }
+
+    function setCategory(cat) {
+      state.selectedCategory = cat;
+      document.getElementById('catAll').className = 'cat-btn' + (cat === 'all' ? ' active-all' : '');
+      document.getElementById('catUrgent').className = 'cat-btn' + (cat === 'urgent' ? ' active-urgent' : '');
+      document.getElementById('catGeneral').className = 'cat-btn' + (cat === 'general' ? ' active-general' : '');
+      document.getElementById('catPromo').className = 'cat-btn' + (cat === 'promo' ? ' active-promo' : '');
+      triggerPageTransition();
+      renderEmails();
+    }
+
+    function toggleHideDone() {
+      state.hideDone = !state.hideDone;
+      document.getElementById('hideDoneLabel').textContent = 'ซ่อนที่ทำเสร็จ: ' + (state.hideDone ? 'เปิด' : 'ปิด');
+      triggerPageTransition();
+      renderEmails();
+    }
+
+    function markAllPromoDone() {
+      const currentDigest = state.digests[state.currentSlot];
+      let count = 0;
+      (currentDigest.items || []).forEach(function(item) {
+        if (item.category === 'promo' && !item.done) {
+          item.done = true;
+          count++;
+        }
+      });
+      localStorage.setItem('cmp_digests_v2', JSON.stringify(state.digests));
+      renderAll();
+      showToast(count > 0 ? 'เคลียร์เมลโปรโมชัน ' + count + ' ฉบับเรียบร้อย!' : 'เมลโปรโมชันถูกเคลียร์หมดแล้วครับ');
+    }
+
+    function renderAll() {
+      const morningItems = (state.digests['05:00'] && state.digests['05:00'].items) || [];
+      const eveningItems = (state.digests['18:00'] && state.digests['18:00'].items) || [];
+      document.getElementById('badgeCountMorning').textContent = morningItems.length + ' ฉบับ';
+      document.getElementById('badgeCountEvening').textContent = eveningItems.length + ' ฉบับ';
+
+      const currentDigest = state.digests[state.currentSlot] || SAMPLE_DIGESTS['05:00'];
+      const items = currentDigest.items || [];
+
+      document.getElementById('digestTimestamp').textContent = 'อัปเดตล่าสุด ' + currentDigest.createdAt;
+      document.getElementById('overviewText').innerHTML = highlightImportantText(currentDigest.overview);
+
+      const urgentItems = items.filter(function(i) { return i.category === 'urgent'; });
+      const generalCount = items.filter(function(i) { return i.category === 'general'; }).length;
+      const doneCount = items.filter(function(i) { return i.done; }).length;
+      const pct = items.length > 0 ? Math.round((doneCount / items.length) * 100) : 100;
+
+      document.getElementById('statTotal').textContent = items.length;
+      document.getElementById('statUrgent').textContent = urgentItems.length;
+      document.getElementById('statGeneral').textContent = generalCount;
+      document.getElementById('statDone').textContent = doneCount + ' / ' + items.length;
+
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressPercent').textContent = pct + '% (' + doneCount + '/' + items.length + ')';
+
+      renderUrgentQuickChecklist(urgentItems);
+      renderAccountsStrip(items);
+      renderEmails();
+    }
+
+    function renderUrgentQuickChecklist(urgentItems) {
+      const box = document.getElementById('urgentQuickBox');
+      if (!urgentItems || urgentItems.length === 0) {
+        box.style.display = 'none';
+        return;
+      }
+      box.style.display = 'block';
+
+      const pendingCount = urgentItems.filter(function(i) { return !i.done; }).length;
+      let html = '<div class="urgent-quick-header">' +
+        '<div class="urgent-quick-title">' +
+          '<span class="urgent-pulse-dot"></span>' +
+          '<span>งานด่วนที่คริสต้องทำในรอบนี้ (' + (pendingCount > 0 ? 'เหลือ ' + pendingCount + ' งาน' : 'ทำครบทุกงานแล้ว!') + ')</span>' +
+        '</div>' +
+        '</div>' +
+        '<div class="urgent-quick-list">';
+
+      urgentItems.forEach(function(item) {
+        const acc = getAccountMeta(item.account);
+        html += '<div class="urgent-quick-item ' + (item.done ? 'done' : '') + '">' +
+          '<div class="urgent-quick-top">' +
+            '<span class="account-badge" style="background:' + acc.color + '">' + escapeHtml(acc.label) + '</span>' +
+            '<button type="button" class="btn btn-sm ' + (item.done ? 'btn-done-active' : 'btn-check-urgent') + '" onclick="toggleDone(\'' + item.id + '\')">' +
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+              '<span>' + (item.done ? 'เสร็จแล้ว' : 'ติ๊กเสร็จทันที') + '</span>' +
+            '</button>' +
+          '</div>' +
+          '<div class="urgent-quick-text">' + highlightImportantText(item.actionItem || item.summaryTitle) + '</div>' +
+        '</div>';
+      });
+
+      html += '</div>';
+      box.innerHTML = html;
+    }
+
+    /**
+     * วาดกล่องเลือกบัญชี Gmail แบบ Grid เต็มคำ ไม่มีการตัดหรือบีบข้อความ
+     */
+    function renderAccountsStrip(items) {
+      const container = document.getElementById('accountsStrip');
+      const countByAcc = {};
+      items.forEach(function(item) {
+        countByAcc[item.account] = (countByAcc[item.account] || 0) + 1;
+      });
+
+      const allActive = state.selectedAccount === 'all';
+      let html = '<button type="button" class="account-pill ' + (allActive ? 'active' : '') + '" style="' + (allActive ? 'background:#1E293B; border-color:#38BDF8;' : '') + '" onclick="selectAccount(\'all\')">' +
+        '<span class="account-pill-left">' +
+          '<span class="account-dot" style="background:' + (allActive ? '#38BDF8' : '#64748B') + '"></span>' +
+          '<span>ทุกบัญชี (All)</span>' +
+        '</span>' +
+        '<span class="pill-count">' + items.length + '</span>' +
+        '</button>';
+
+      state.accounts.forEach(function(acc) {
+        const count = countByAcc[acc.email] || 0;
+        const isActive = state.selectedAccount === acc.email;
+        const activeStyle = isActive
+          ? 'background:' + acc.color + '; border-color:' + acc.color + ';'
+          : 'border-color:' + acc.color + '88;';
+        html += '<button type="button" class="account-pill ' + (isActive ? 'active' : '') + '" style="' + activeStyle + '" onclick="selectAccount(\'' + acc.email + '\')">' +
+          '<span class="account-pill-left">' +
+            '<span class="account-dot" style="background:' + (isActive ? '#FFFFFF' : acc.color) + '"></span>' +
+            '<span>' + escapeHtml(acc.label) + '</span>' +
+          '</span>' +
+          '<span class="pill-count">' + count + '</span>' +
+          '</button>';
+      });
+
+      container.innerHTML = html;
+      const activeAccObj = state.accounts.find(function(a) { return a.email === state.selectedAccount; });
+      document.getElementById('activeAccountLabel').textContent = activeAccObj
+        ? 'กำลังดู: ' + activeAccObj.label + ' (' + activeAccObj.email + ')'
+        : 'แสดงทุกบัญชี (' + state.accounts.length + ' บัญชี)';
+    }
+
+    function renderEmails() {
+      const currentDigest = state.digests[state.currentSlot] || SAMPLE_DIGESTS['05:00'];
+      const items = currentDigest.items || [];
+      const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+
+      const filtered = items.filter(function(item) {
+        if (state.selectedAccount !== 'all' && item.account !== state.selectedAccount) return false;
+        if (state.selectedCategory !== 'all' && item.category !== state.selectedCategory) return false;
+        if (state.hideDone && item.done) return false;
+        if (query) {
+          const text = (item.summaryTitle + ' ' + item.originalSubject + ' ' + item.sender + ' ' + item.account + ' ' + (item.actionItem || '')).toLowerCase();
+          if (text.indexOf(query) === -1) return false;
+        }
+        return true;
+      });
+
+      const container = document.getElementById('emailListContainer');
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state">' +
+          '<p style="font-weight:800; font-size:1.05rem; margin-bottom:4px;">ไม่พบรายการอีเมลในตัวกรองนี้</p>' +
+          '<p style="font-size:0.88rem;">ลองกดปุ่ม "ทั้งหมด" หรือสลับดูบัญชีอื่นได้เลยครับคริส</p>' +
+          '</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(function(item, index) {
+        const accInfo = getAccountMeta(item.account);
+        const badgeLabel = item.category === 'urgent'
+          ? 'สำคัญด่วน • ต้องรีบดู'
+          : (item.category === 'general' ? 'ทั่วไป / ระบบ' : 'โปรโมชัน');
+
+        const pointsHtml = (item.summaryPoints || []).map(function(pt) {
+          return '<li>' + highlightImportantText(pt) + '</li>';
+        }).join('');
+
+        const actionHtml = item.actionItem
+          ? '<div class="action-box">' +
+              '<div class="action-box-left">' +
+                '<span class="action-tag-pill">ต้องทำทันที</span>' +
+                '<span>' + highlightImportantText(item.actionItem) + '</span>' +
+              '</div>' +
+            '</div>'
+          : '';
+
+        const delayMs = index * 55;
+
+        return '<article class="email-card priority-' + item.category + (item.done ? ' is-done' : '') + '" style="animation-delay:' + delayMs + 'ms;">' +
+          '<div class="card-top">' +
+            '<div class="card-badges">' +
+              '<span class="priority-badge ' + item.category + '">' + badgeLabel + '</span>' +
+              '<span class="account-badge" style="background:' + accInfo.color + ';">' +
+                '<span>' + escapeHtml(accInfo.label) + ' • ' + escapeHtml(item.account) + '</span>' +
+              '</span>' +
+            '</div>' +
+            '<span class="time-label">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' +
+              '<span>' + escapeHtml(item.timestamp) + ' น.</span>' +
+            '</span>' +
+          '</div>' +
+          '<h3 class="card-title">' + highlightImportantText(item.summaryTitle) + '</h3>' +
+          '<div class="card-meta">จาก: ' + escapeHtml(item.sender) + ' • หัวข้อเดิม: ' + escapeHtml(item.originalSubject) + '</div>' +
+          '<ul class="summary-points">' + pointsHtml + '</ul>' +
+          actionHtml +
+          '<div class="card-footer">' +
+            '<div class="card-actions-left">' +
+              '<button type="button" class="btn btn-sm ' + (item.done ? 'btn-done-active' : (item.category === 'urgent' ? 'btn-check-urgent' : '')) + '" onclick="toggleDone(\'' + item.id + '\')">' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+                '<span>' + (item.done ? 'จัดการเสร็จแล้ว' : 'ติ๊กว่าจัดการเสร็จ') + '</span>' +
+              '</button>' +
+              '<button type="button" class="btn btn-sm" onclick="copyItemSummary(\'' + item.id + '\')">' +
+                '<span>คัดลอกสรุป</span>' +
+              '</button>' +
+            '</div>' +
+            '<div class="card-actions-right">' +
+              '<a href="' + escapeHtml(item.gmailUrl) + '" target="_blank" rel="noopener" class="btn btn-sm">' +
+                '<span>เปิดใน Gmail</span>' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+              '</a>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    function toggleDone(itemId) {
+      const digest = state.digests[state.currentSlot];
+      if (!digest || !digest.items) return;
+      const target = digest.items.find(function(i) { return i.id === itemId; });
+      if (target) {
+        target.done = !target.done;
+        localStorage.setItem('cmp_digests_v2', JSON.stringify(state.digests));
+        renderAll();
+        showToast(target.done ? 'ติ๊กเสร็จเรียบร้อย!' : 'ย้ายกลับมาเป็นรอดำเนินการ');
+      }
+    }
+
+    function copyItemSummary(itemId) {
+      const digest = state.digests[state.currentSlot];
+      const target = (digest.items || []).find(function(i) { return i.id === itemId; });
+      if (!target) return;
+      const text = '[' + target.account + '] ' + target.summaryTitle + '\n- ' + (target.summaryPoints || []).join('\n- ') + (target.actionItem ? '\nต้องทำ: ' + target.actionItem : '');
+      navigator.clipboard.writeText(text).then(function() {
+        showToast('คัดลอกข้อความสรุปเรียบร้อยแล้ว');
+      });
+    }
+
+    function speakCurrentBrief() {
+      if (!('speechSynthesis' in window)) {
+        showToast('เบราว์เซอร์นี้ไม่รองรับการอ่านออกเสียง');
+        return;
+      }
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        document.getElementById('speakBtnLabel').textContent = 'ฟังเสียงสรุป';
+        return;
+      }
+
+      const digest = state.digests[state.currentSlot];
+      const urgentList = (digest.items || []).filter(function(i) { return i.category === 'urgent'; });
+      let speechText = digest.overview + ' ';
+      urgentList.forEach(function(u, idx) {
+        speechText += 'เรื่องด่วนที่ ' + (idx + 1) + ' จาก ' + u.account + ' ' + u.summaryTitle + ' ';
+        if (u.actionItem) speechText += 'สิ่งที่ต้องทำคือ ' + u.actionItem + ' ';
+      });
+
+      const utter = new SpeechSynthesisUtterance(speechText);
+      utter.lang = 'th-TH';
+      utter.rate = 1.05;
+      utter.onend = function() {
+        document.getElementById('speakBtnLabel').textContent = 'ฟังเสียงสรุป';
+      };
+      document.getElementById('speakBtnLabel').textContent = 'หยุดอ่าน';
+      window.speechSynthesis.speak(utter);
+    }
+
+    function handleSyncNow() {
+      const btn = document.getElementById('btnSyncNow');
+      btn.disabled = true;
+      btn.classList.add('spinning');
+      showToast('กำลังดึงอีเมลจากทุกบัญชีและสรุปด้วย Gemini 2.5 Flash...');
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(function(newDigest) {
+          btn.disabled = false;
+          btn.classList.remove('spinning');
+          if (newDigest && newDigest.slot) {
+            state.digests[newDigest.slot] = newDigest;
+            triggerPageTransition();
+            renderAll();
+            showToast('อัปเดตสรุปอีเมลล่าสุดเรียบร้อยแล้ว!');
+          }
+        }).withFailureHandler(function() {
+          btn.disabled = false;
+          btn.classList.remove('spinning');
+          showToast('เกิดข้อผิดพลาดในการซิงก์ข้อมูล');
+        }).triggerManualSync(state.currentSlot);
+      } else {
+        setTimeout(function() {
+          btn.disabled = false;
+          btn.classList.remove('spinning');
+          state.digests[state.currentSlot].createdAt = 'ซิงก์ล่าสุดเมื่อสักครู่';
+          triggerPageTransition();
+          renderAll();
+          showToast('ซิงก์และอัปเดตข้อมูลสรุปครบทุกบัญชีแล้ว!');
+        }, 700);
+      }
+    }
+
+    function openDiscordModal() {
+      const digest = state.digests[state.currentSlot];
+      const items = digest.items || [];
+      const urgent = items.filter(function(i) { return i.category === 'urgent'; });
+      const general = items.filter(function(i) { return i.category === 'general'; });
+
+      document.getElementById('discordPreviewTime').textContent = digest.slot;
+      document.getElementById('discordPreviewHeadline').textContent =
+        urgent.length > 0
+          ? '🔔 สรุปอีเมล' + digest.slotTitle + ' — มีเมลด่วน ' + urgent.length + ' ฉบับที่คริสควรดูครับ'
+          : '✅ สรุปอีเมล' + digest.slotTitle + ' — ไม่มีเมลด่วน';
+      document.getElementById('discordPreviewTitle').textContent =
+        (digest.slot === '05:00' ? '🌅 ' : '🌇 ') + 'สรุปอีเมล' + digest.slotTitle + ' • ' + digest.date;
+      document.getElementById('discordPreviewDesc').textContent = digest.overview;
+
+      document.getElementById('discordPreviewUrgent').textContent = urgent.length > 0
+        ? urgent.map(function(u) {
+            return '• [' + u.account + '] ' + u.summaryTitle + (u.actionItem ? '\n  ↳ ต้องทำ: ' + u.actionItem : '');
+          }).join('\n')
+        : 'ไม่มีอีเมลด่วน';
+
+      document.getElementById('discordPreviewGeneral').textContent = general.length > 0
+        ? general.map(function(g) {
+            return '• [' + g.account + '] ' + g.summaryTitle;
+          }).join('\n')
+        : 'ไม่มีแจ้งเตือนทั่วไป';
+
+      document.getElementById('discordWebhookInput').value = state.webhookUrl;
+      document.getElementById('discordModal').classList.add('open');
+    }
+
+    function closeDiscordModal() {
+      document.getElementById('discordModal').classList.remove('open');
+    }
+
+    function sendTestDiscordWebhook() {
+      const url = (document.getElementById('discordWebhookInput').value || '').trim();
+      if (!url || url.indexOf('https://discord.com/api/webhooks/') !== 0) {
+        showToast('กรุณาวางลิงก์ Discord Webhook URL ที่ถูกต้องก่อนครับ');
+        return;
+      }
+
+      state.webhookUrl = url;
+      localStorage.setItem('cmp_discord_webhook', url);
+
+      const digest = state.digests[state.currentSlot];
+      const items = digest.items || [];
+      const urgent = items.filter(function(i) { return i.category === 'urgent'; });
+      const general = items.filter(function(i) { return i.category === 'general'; });
+      const promo = items.filter(function(i) { return i.category === 'promo'; });
+
+      const payload = {
+        username: 'Chris Mail Pulse',
+        content: '🔔 **สรุปอีเมล' + digest.slotTitle + '** — มีเมลด่วน **' + urgent.length + ' ฉบับ** ครับคริส',
+        embeds: [
+          {
+            title: (digest.slot === '05:00' ? '🌅 ' : '🌇 ') + 'สรุปอีเมล' + digest.slotTitle + ' • ' + digest.date,
+            description: digest.overview,
+            color: urgent.length > 0 ? 14427686 : 2450411,
+            fields: [
+              {
+                name: '🚨 สำคัญ / ต้องจัดการ (' + urgent.length + ' ฉบับ)',
+                value: urgent.length > 0
+                  ? urgent.map(function(u) { return '• **[' + u.account + ']** ' + u.summaryTitle + (u.actionItem ? '\n  ↳ **ต้องทำ:** ' + u.actionItem : ''); }).join('\n')
+                  : 'ไม่มีอีเมลด่วน'
+              },
+              {
+                name: '📌 ทั่วไป / อัปเดตระบบ (' + general.length + ' ฉบับ)',
+                value: general.length > 0
+                  ? general.map(function(g) { return '• **[' + g.account + ']** ' + g.summaryTitle; }).join('\n')
+                  : 'ไม่มีแจ้งเตือนทั่วไป'
+              },
+              {
+                name: '🏷️ โปรโมชัน (' + promo.length + ' ฉบับ)',
+                value: promo.length > 0
+                  ? 'ยุบรวม ' + promo.length + ' ฉบับ (' + promo.map(function(p) { return p.summaryTitle; }).join(', ') + ')'
+                  : 'ไม่มีโปรโมชัน'
+              }
+            ],
+            footer: { text: 'Chris Mail Pulse • สรุปอัตโนมัติเวลา 05:00 และ 18:00 น.' }
+          }
+        ]
+      };
+
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(res) {
+        if (res.ok) {
+          showToast('ส่งสรุปเข้า Discord ของคริสสำเร็จแล้ว!');
+          closeDiscordModal();
+        } else {
+          showToast('ส่งไม่สำเร็จ กรุณาตรวจสอบลิงก์ Webhook (' + res.status + ')');
+        }
+      }).catch(function() {
+        showToast('ไม่สามารถเชื่อมต่อ Discord Webhook ได้');
+      });
+    }
+
+    function openSettingsModal() {
+      document.getElementById('settingsWebhookInput').value = state.webhookUrl;
+      const gasInput = document.getElementById('gasWebAppUrlInput');
+      if (gasInput) gasInput.value = localStorage.getItem('cmp_gas_webapp_url') || '';
+      document.getElementById('settingsModal').classList.add('open');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('open');
+    }
+
+    /**
+     * คัดลอกไฟล์โค้ด (Code.gs หรือ index.html) จากรีโปเข้าคลิปบอร์ดในคลิกเดียว
+     */
+    function copyRepoFile(fileName) {
+      fetch('./' + fileName)
+        .then(function(res) { return res.text(); })
+        .then(function(codeText) {
+          return navigator.clipboard.writeText(codeText);
+        })
+        .then(function() {
+          showToast('คัดลอกโค้ด ' + fileName + ' ทั้งหมดแล้ว! นำไปวางใน script.google.com ได้เลย');
+        })
+        .catch(function() {
+          showToast('ไม่สามารถคัดลอกอัตโนมัติได้ กรุณาเปิดไฟล์ ' + fileName + ' จากหน้า GitHub');
+        });
+    }
+
+    function addCustomAccount() {
+      const input = document.getElementById('newAccountInput');
+      const raw = (input.value || '').trim();
+      if (!raw) return;
+
+      const palette = ['#1D4ED8', '#DC2626', '#047857', '#B45309', '#0E7490', '#4338CA'];
+      const color = palette[state.accounts.length % palette.length];
+      const emailPart = raw.split(' ')[0];
+
+      state.accounts.push({
+        email: emailPart,
+        label: raw,
+        color: color
+      });
+      localStorage.setItem('cmp_accounts_v2', JSON.stringify(state.accounts));
+      input.value = '';
+      renderAll();
+      showToast('เพิ่มบัญชี ' + raw + ' บนแดชบอร์ดแล้ว');
+    }
+
+    function saveSettings() {
+      const apiKey = (document.getElementById('geminiKeyInput').value || '').trim();
+      const webhook = (document.getElementById('settingsWebhookInput').value || '').trim();
+      const gasUrlEl = document.getElementById('gasWebAppUrlInput');
+      const gasUrl = gasUrlEl ? (gasUrlEl.value || '').trim() : '';
+
+      if (webhook) {
+        state.webhookUrl = webhook;
+        localStorage.setItem('cmp_discord_webhook', webhook);
+      }
+
+      if (gasUrl) {
+        localStorage.setItem('cmp_gas_webapp_url', gasUrl);
+        fetchFromExternalGasUrl(gasUrl);
+      }
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(function() {
+          showToast('บันทึกการตั้งค่าลง Google Apps Script แล้ว');
+          closeSettingsModal();
+        }).saveConfigFromWeb({
+          geminiApiKey: apiKey,
+          discordWebhookUrl: webhook
+        });
+      } else {
+        showToast('บันทึกการตั้งค่าเรียบร้อยแล้ว');
+        closeSettingsModal();
+      }
+    }
+
+    /**
+     * ดึงข้อมูลสรุปอีเมลจริงจาก Google Apps Script Web App URL (กรณีเปิดผ่าน GitHub Pages)
+     */
+    function fetchFromExternalGasUrl(gasUrl) {
+      if (!gasUrl) return;
+      const sep = gasUrl.indexOf('?') === -1 ? '?api=data' : '&api=data';
+      fetch(gasUrl + sep)
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (res && res.success && res.digests && res.digests.length > 0) {
+            res.digests.forEach(function(d) {
+              state.digests[d.slot || '05:00'] = d;
+            });
+            localStorage.setItem('cmp_digests_v2', JSON.stringify(state.digests));
+            renderAll();
+            showToast('ซิงก์ข้อมูลอีเมลจริงจาก Google Apps Script สำเร็จ!');
+          }
+        })
+        .catch(function() {});
+    }
+
+    function getAccountMeta(email) {
+      const found = state.accounts.find(function(a) { return a.email === email; });
+      return found || { email: email, label: email, color: '#475569' };
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById('toastMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(function() {
+        el.classList.remove('show');
+      }, 2800);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>

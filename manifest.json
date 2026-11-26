@@ -1,0 +1,9 @@
+{
+  "name": "Chris Mail Pulse",
+  "short_name": "MailPulse",
+  "description": "แดชบอร์ดสรุปอีเมล Gmail หลายบัญชีอัตโนมัติ (05:00 & 18:00 น.) สำหรับคริส",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#1D4ED8"
+}
