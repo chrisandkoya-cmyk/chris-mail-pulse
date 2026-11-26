@@ -1,41 +1,58 @@
 /**
  * ระบบสรุปอีเมลหลายบัญชีอัตโนมัติ (Chris Mail Pulse)
- * ทำงานเวลา 05:00 น. และ 18:00 น. สรุปด้วย Gemini API (Free Tier)
- * ส่งแจ้งเตือนเข้า Discord Webhook และแสดงผลบนหน้าเว็บ Dashboard
+ * ตั้งค่าพร้อมใช้งานสำหรับคริส (อัษฎาวุฒิ รัตนพันธ์)
+ * เมลหลัก: noname04581@gmail.com และเมลรองอีก 11 บัญชี
+ * ทำงานเวลา 05:00 น. และ 18:00 น. สรุปด้วย Gemini 2.5 Flash (Free Tier) และส่งเข้า Discord
  */
 
-// ค่าเริ่มต้นของระบบ (สามารถตั้งค่าผ่านหน้าเว็บ Dashboard หรือใส่ใน Script Properties ได้)
+// ค่าตั้งต้นที่เชื่อมกับฐานข้อมูล Google Sheet ของคริสไว้เรียบร้อยแล้ว
 const DEFAULT_CONFIG = {
+  PRIMARY_EMAIL: 'noname04581@gmail.com',
+  DEFAULT_SPREADSHEET_ID: '1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk',
+  DEFAULT_DASHBOARD_URL: 'https://chrisandkoya-cmyk.github.io/chris-mail-pulse/',
   GEMINI_MODEL: 'gemini-2.5-flash',
   LOOKBACK_HOURS: 14,
-  MAX_EMAILS_PER_RUN: 35,
+  MAX_EMAILS_PER_RUN: 40,
   TIMEZONE: 'Asia/Bangkok'
 };
 
+// รายชื่อบัญชี Gmail ทั้ง 12 บัญชีของคริส
+const CHRIS_ACCOUNTS = [
+  { email: 'noname04581@gmail.com', label: 'Remuru noname (เมลหลัก)', role: 'MAIN' },
+  { email: 'chrisandkoya@gmail.com', label: 'koya chris (Pro)', role: 'SUB' },
+  { email: 'zaqdera@gmail.com', label: 'rimuru msatercell', role: 'SUB' },
+  { email: 'msatergenshi@gmail.com', label: 'Atsadawod Genshi', role: 'SUB' },
+  { email: 'zaq04581@gmail.com', label: 'Master Cell', role: 'SUB' },
+  { email: 'zaq04581za@gmail.com', label: 'อัษฎาวุฒิ รัตนพันธ์', role: 'SUB' },
+  { email: 'hyakx33@gmail.com', label: 'กอ หญ้า', role: 'SUB' },
+  { email: 'saengphengsbithiphy@gmail.com', label: 'สใบทิพย์ แสงเพ็ง', role: 'SUB' },
+  { email: 'koya.1650202017@gmail.com', label: 'สใบทิพย์', role: 'SUB' },
+  { email: 'koya165020@gmail.com', label: 'สใบทิพย์ แสงเพ็ง (2)', role: 'SUB' },
+  { email: 'zaq04581zaza@gmail.com', label: 'DE Za', role: 'SUB' },
+  { email: 'oatthawut113366@gmail.com', label: 'OATTHAWUT RATTANAPHUN', role: 'SUB' }
+];
+
 /**
- * เปิดหน้าเว็บ Dashboard เมื่อเข้าใช้งานผ่านลิงก์ Web App
+ * เปิดหน้าเว็บ Dashboard หรือส่งข้อมูล JSON เมื่อเรียกพร้อม ?api=data
  */
 function doGet(e) {
-  // ถ้าเรียกพร้อมพารามิเตอร์ ?api=data ให้คืนค่าเป็น JSON สำหรับดึงข้อมูลภายนอก
   if (e && e.parameter && e.parameter.api === 'data') {
     const payload = getDashboardData();
     return ContentService.createTextOutput(JSON.stringify(payload))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // แสดงหน้าเว็บ Dashboard จากไฟล์ index.html
   return HtmlService.createHtmlOutputFromFile('index')
-    .setTitle('Chris Mail Pulse — แดชบอร์ดสรุปอีเมล')
+    .setTitle('Chris Mail Pulse — แดชบอร์ดสรุปอีเมล 12 บัญชี')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=5');
 }
 
 /**
  * ตั้งเวลาทำงานอัตโนมัติ 2 รอบต่อวัน: 05:00 น. และ 18:00 น.
- * ให้กดรันฟังก์ชันนี้เพียงครั้งเดียวตอนติดตั้งครั้งแรก
+ * กดรันฟังก์ชันนี้เพียงครั้งเดียวในหน้า Google Apps Script
  */
 function setupDailyTriggers() {
-  // ลบ Trigger เดิมออกก่อนเพื่อป้องกันการทำงานซ้ำซ้อน
   const triggers = ScriptApp.getProjectTriggers();
   triggers.forEach(function(trigger) {
     const handler = trigger.getHandlerFunction();
@@ -44,7 +61,7 @@ function setupDailyTriggers() {
     }
   });
 
-  // สร้าง Trigger รอบเช้า เวลา 05:00 น.
+  // รอบเช้า 05:00 น.
   ScriptApp.newTrigger('runMorningDigest')
     .timeBased()
     .everyDays(1)
@@ -53,7 +70,7 @@ function setupDailyTriggers() {
     .inTimezone(DEFAULT_CONFIG.TIMEZONE)
     .create();
 
-  // สร้าง Trigger รอบเย็น เวลา 18:00 น.
+  // รอบเย็น 18:00 น.
   ScriptApp.newTrigger('runEveningDigest')
     .timeBased()
     .everyDays(1)
@@ -64,7 +81,7 @@ function setupDailyTriggers() {
 
   return {
     success: true,
-    message: 'ตั้งเวลาสรุปอัตโนมัติรอบ 05:00 น. และ 18:00 น. เรียบร้อยแล้ว'
+    message: 'ตั้งเวลาสรุปอัตโนมัติรอบ 05:00 น. และ 18:00 น. สำหรับทั้ง 12 บัญชีเรียบร้อยแล้ว'
   };
 }
 
@@ -93,13 +110,12 @@ function triggerManualSync(slotLabel) {
 }
 
 /**
- * กระบวนการหลัก: ดึงอีเมลทุกบัญชี -> ให้ Gemini สรุป -> บันทึกลง Sheet -> ส่งเข้า Discord
+ * กระบวนการหลัก: ดึงอีเมลจากทั้ง 12 บัญชี -> ให้ Gemini สรุป -> บันทึกลง Sheet -> ส่งเข้า Discord
  */
 function executeDigestCycle(slotCode, slotTitle) {
   const config = getAppConfig();
   const rawEmails = collectAllEmails(config);
 
-  // กรณีไม่มีอีเมลใหม่เข้ามาในช่วงเวลาที่กำหนด
   if (rawEmails.length === 0) {
     const emptyDigest = {
       id: 'digest_' + new Date().getTime(),
@@ -107,7 +123,7 @@ function executeDigestCycle(slotCode, slotTitle) {
       slot: slotCode,
       slotTitle: slotTitle,
       createdAt: Utilities.formatDate(new Date(), DEFAULT_CONFIG.TIMEZONE, 'yyyy-MM-dd HH:mm'),
-      overview: 'ไม่มีอีเมลใหม่เข้ามาในรอบนี้ ทุกบัญชีสะอาดเรียบร้อยครับคริส',
+      overview: 'ไม่มีอีเมลใหม่เข้ามาในรอบนี้ ทั้ง 12 บัญชีของคริสสะอาดเรียบร้อยครับ',
       items: []
     };
     saveDigestToSheet(emptyDigest);
@@ -117,7 +133,6 @@ function executeDigestCycle(slotCode, slotTitle) {
     return emptyDigest;
   }
 
-  // ส่งข้อมูลอีเมลให้ Gemini สรุปและจัดหมวดหมู่
   const aiResult = summarizeWithGemini(rawEmails, config.geminiApiKey, slotTitle);
 
   const digestRecord = {
@@ -130,10 +145,8 @@ function executeDigestCycle(slotCode, slotTitle) {
     items: aiResult.items
   };
 
-  // บันทึกผลสรุปลง Google Sheet เพื่อให้หน้าเว็บ Dashboard ดึงไปแสดงผล
   saveDigestToSheet(digestRecord);
 
-  // ส่งแจ้งเตือนเข้า Discord Webhook
   if (config.discordWebhookUrl) {
     sendDiscordDigest(config.discordWebhookUrl, digestRecord, config.dashboardUrl);
   }
@@ -142,13 +155,13 @@ function executeDigestCycle(slotCode, slotTitle) {
 }
 
 /**
- * ดึงอีเมลจากบัญชีหลัก (รวมเมลที่ Auto-Forward มาจากบัญชีรอง) และจากตาราง RawInbox (กรณีใช้สคริปต์ตัวลูก)
+ * ดึงอีเมลจากเมลหลัก noname04581@gmail.com (รวมเมลที่ส่งต่อมาจากเมลรอง) และจากแผ่นงาน RawInbox
  */
 function collectAllEmails(config) {
   const collected = [];
   const cutoffTime = new Date(new Date().getTime() - (DEFAULT_CONFIG.LOOKBACK_HOURS * 60 * 60 * 1000));
   const afterEpoch = Math.floor(cutoffTime.getTime() / 1000);
-  const myPrimaryEmail = Session.getActiveUser().getEmail() || 'บัญชีหลัก';
+  const myPrimaryEmail = Session.getActiveUser().getEmail() || DEFAULT_CONFIG.PRIMARY_EMAIL;
 
   // 1. ค้นหาอีเมลใหม่ใน Gmail บัญชีหลัก
   const query = 'after:' + afterEpoch + ' -in:trash -in:spam';
@@ -159,7 +172,6 @@ function collectAllEmails(config) {
     const msg = messages[messages.length - 1];
     if (msg.getDate() < cutoffTime) return;
 
-    // ตรวจสอบว่าอีเมลนี้ส่งถึงบัญชีไหน (รองรับกรณี Forward มาจากเมลรองของคริส)
     const targetAccount = detectTargetAccount(msg, myPrimaryEmail);
     const plainBody = (msg.getPlainBody() || '').replace(/\s+/g, ' ').trim().substring(0, 700);
 
@@ -175,7 +187,7 @@ function collectAllEmails(config) {
     });
   });
 
-  // 2. ดึงอีเมลจากแผ่นงาน RawInbox (กรณีบัญชีรองใช้ Collector.gs ส่งข้อมูลเข้ามา)
+  // 2. ดึงอีเมลจากแผ่นงาน RawInbox (ที่ส่งมาจากบัญชีรองอีก 11 บัญชีผ่าน Collector.gs)
   const sheetEmails = consumeExternalCollectorEmails();
   sheetEmails.forEach(function(item) {
     collected.push(item);
@@ -185,29 +197,37 @@ function collectAllEmails(config) {
 }
 
 /**
- * ตรวจจับชื่อบัญชีปลายทางที่แท้จริงจาก Header ของอีเมล (รองรับหลายบัญชีที่ Forward มารวมกัน)
+ * ตรวจจับว่าอีเมลฉบับนั้นเป็นของบัญชีไหนใน 12 บัญชีของคริส
  */
 function detectTargetAccount(message, fallbackEmail) {
-  const toHeader = message.getTo() || '';
-  const emailMatch = toHeader.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+  const combinedHeader = ((message.getTo() || '') + ' ' + (message.getCc ? (message.getCc() || '') : '')).toLowerCase();
+
+  // ตรวจสอบเทียบกับรายชื่ออีเมลทั้ง 12 บัญชีของคริสก่อน
+  for (let i = 0; i < CHRIS_ACCOUNTS.length; i++) {
+    const knownEmail = CHRIS_ACCOUNTS[i].email.toLowerCase();
+    if (combinedHeader.indexOf(knownEmail) !== -1) {
+      return knownEmail;
+    }
+  }
+
+  const emailMatch = combinedHeader.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
   if (emailMatch && emailMatch[0]) {
     return emailMatch[0].toLowerCase();
   }
-  return fallbackEmail.toLowerCase();
+  return (fallbackEmail || DEFAULT_CONFIG.PRIMARY_EMAIL).toLowerCase();
 }
 
 /**
  * ส่งรายการอีเมลให้ Gemini 2.5 Flash สรุปเป็นภาษาไทยและแยกหมวดหมู่
  */
 function summarizeWithGemini(emails, apiKey, slotTitle) {
-  // หากยังไม่ได้ตั้งค่า Gemini API Key ให้ใช้ระบบจัดหมวดหมู่อัตโนมัติเบื้องต้นแทนเพื่อไม่ให้ระบบหยุดทำงาน
   if (!apiKey) {
     return buildFallbackSummary(emails, 'ยังไม่ได้ใส่ Gemini API Key (แสดงสรุปเบื้องต้นจากหัวข้ออีเมล)');
   }
 
   const promptText = [
-    'คุณคือผู้ช่วยส่วนตัวของ "คริส" (นักศึกษา ปวส. เทคโนโลยีธุรกิจดิจิทัล และนักพัฒนาเกม/แอพ)',
-    'หน้าที่ของคุณคืออ่านรายการอีเมลจากหลายบัญชีใน ' + slotTitle + ' แล้วสรุปเป็นภาษาไทยที่สั้น ตรงประเด็น อ่านเข้าใจทันที',
+    'คุณคือผู้ช่วยส่วนตัวของ "คริส" (อัษฎาวุฒิ รัตนพันธ์ — นักศึกษา ปวส. เทคโนโลยีธุรกิจดิจิทัล ห้อง สบค.11 และนักพัฒนาเกม/แอพ)',
+    'หน้าที่ของคุณคืออ่านรายการอีเมลจาก 12 บัญชีของคริสใน ' + slotTitle + ' แล้วสรุปเป็นภาษาไทยที่สั้น ตรงประเด็น อ่านเข้าใจทันที',
     '',
     'กฎการจัดหมวดหมู่ (category):',
     '- "urgent": เรื่องสำคัญมากหรือต้องรีบทำ เช่น งานเรียน วิทยาลัย อาจารย์ งานส่ง แจ้งเตือนความปลอดภัย ธนาคาร/การเงิน หรือคนติดต่อเรื่องงานโดยตรง',
@@ -216,7 +236,7 @@ function summarizeWithGemini(emails, apiKey, slotTitle) {
     '',
     'ตอบกลับเป็น JSON เท่านั้น ตามโครงสร้างนี้:',
     '{',
-    '  "overview": "สรุปภาพรวม 2-3 ประโยคสั้นๆ ว่ามีเมลสำคัญกี่ฉบับ เรื่องอะไรที่คริสต้องรีบดูเป็นพิเศษ",',
+    '  "overview": "สรุปภาพรวม 2-3 ประโยคสั้นๆ ว่ามีเมลสำคัญกี่ฉบับ จากบัญชีไหน และเรื่องอะไรที่คริสต้องรีบดูเป็นพิเศษ",',
     '  "items": [',
     '    {',
     '      "id": "รหัส id เดิมของอีเมล",',
@@ -261,7 +281,6 @@ function summarizeWithGemini(emails, apiKey, slotTitle) {
     const rawText = json.candidates[0].content.parts[0].text;
     const parsed = JSON.parse(rawText);
 
-    // รวมข้อมูลสรุปจาก AI เข้ากับข้อมูลอีเมลต้นฉบับ
     const byId = {};
     (parsed.items || []).forEach(function(item) {
       byId[item.id] = item;
@@ -289,7 +308,6 @@ function summarizeWithGemini(emails, apiKey, slotTitle) {
       items: mergedItems
     };
   } catch (err) {
-    // กรณีเรียก API ไม่สำเร็จ ให้ใช้ระบบสรุปสำรองแทนเพื่อไม่ให้พลาดการแจ้งเตือน
     return buildFallbackSummary(emails, 'สรุปอัตโนมัติโหมดสำรอง (' + err.message + ')');
   }
 }
@@ -338,7 +356,6 @@ function sendDiscordDigest(webhookUrl, digest, dashboardUrl) {
   const generalItems = items.filter(function(i) { return i.category === 'general'; });
   const promoItems = items.filter(function(i) { return i.category === 'promo'; });
 
-  // สร้างข้อความรายการด่วน
   const urgentLines = urgentItems.length > 0
     ? urgentItems.slice(0, 6).map(function(i) {
         const action = i.actionItem ? '\n   ↳ **ต้องทำ:** ' + i.actionItem : '';
@@ -346,14 +363,12 @@ function sendDiscordDigest(webhookUrl, digest, dashboardUrl) {
       }).join('\n')
     : 'ไม่มีอีเมลด่วนในรอบนี้';
 
-  // สร้างข้อความรายการทั่วไป
   const generalLines = generalItems.length > 0
     ? generalItems.slice(0, 6).map(function(i) {
         return '• **[' + i.account + ']** ' + i.summaryTitle;
       }).join('\n')
     : 'ไม่มีแจ้งเตือนทั่วไป';
 
-  // ยุบรวมโปรโมชันเป็นบรรทัดเดียวไม่ให้รก
   const promoLine = promoItems.length > 0
     ? 'มีอีเมลโปรโมชัน/ข่าวสาร ' + promoItems.length + ' ฉบับ (' + promoItems.slice(0, 4).map(function(i) { return i.summaryTitle; }).join(', ') + ')'
     : 'ไม่มีอีเมลโฆษณา';
@@ -376,10 +391,11 @@ function sendDiscordDigest(webhookUrl, digest, dashboardUrl) {
     }
   ];
 
-  if (dashboardUrl) {
+  const targetUrl = dashboardUrl || DEFAULT_CONFIG.DEFAULT_DASHBOARD_URL;
+  if (targetUrl) {
     fields.push({
       name: '📱 เปิดดูแดชบอร์ดตัวเต็ม (Xiaomi 14 / PC)',
-      value: '[คลิกเปิด Chris Mail Pulse Dashboard](' + dashboardUrl + ')',
+      value: '[คลิกเปิด Chris Mail Pulse Dashboard](' + targetUrl + ')',
       inline: false
     });
   }
@@ -396,7 +412,7 @@ function sendDiscordDigest(webhookUrl, digest, dashboardUrl) {
         color: urgentItems.length > 0 ? 14427686 : 2450411,
         fields: fields,
         footer: {
-          text: 'Chris Mail Pulse • รันอัตโนมัติเวลา 05:00 และ 18:00 น.'
+          text: 'Chris Mail Pulse (เมลหลัก noname04581@gmail.com + 11 บัญชี) • 05:00 & 18:00 น.'
         }
       }
     ]
@@ -411,11 +427,11 @@ function sendDiscordDigest(webhookUrl, digest, dashboardUrl) {
 }
 
 /**
- * อ่านและบันทึกข้อมูลลง Google Sheet อัตโนมัติ (สร้าง Sheet ให้อัตโนมัติหากยังไม่มี)
+ * เชื่อมต่อกับฐานข้อมูล Google Sheet (ใช้ Sheet ID ที่สร้างให้คริสไว้แล้วโดยอัตโนมัติ)
  */
 function getOrCreateDatabaseSheet() {
   const props = PropertiesService.getScriptProperties();
-  let sheetId = props.getProperty('SPREADSHEET_ID');
+  let sheetId = props.getProperty('SPREADSHEET_ID') || DEFAULT_CONFIG.DEFAULT_SPREADSHEET_ID;
   let ss = null;
 
   if (sheetId) {
@@ -431,14 +447,12 @@ function getOrCreateDatabaseSheet() {
     props.setProperty('SPREADSHEET_ID', ss.getId());
   }
 
-  // สร้างแผ่นงาน Digests สำหรับเก็บประวัติสรุปรายวัน
   let digestSheet = ss.getSheetByName('Digests');
   if (!digestSheet) {
     digestSheet = ss.insertSheet('Digests');
     digestSheet.appendRow(['id', 'date', 'slot', 'createdAt', 'jsonPayload']);
   }
 
-  // สร้างแผ่นงาน RawInbox สำหรับรับอีเมลจากบัญชีรอง
   let rawSheet = ss.getSheetByName('RawInbox');
   if (!rawSheet) {
     rawSheet = ss.insertSheet('RawInbox');
@@ -462,13 +476,11 @@ function saveDigestToSheet(digestRecord) {
       digestRecord.createdAt,
       JSON.stringify(digestRecord)
     ]);
-  } catch (e) {
-    // กรณียังไม่ได้เปิดสิทธิ์ Spreadsheet ให้ข้ามการบันทึกลงตารางโดยไม่ทำให้ระบบล่ม
-  }
+  } catch (e) {}
 }
 
 /**
- * ดึงอีเมลจากแผ่นงาน RawInbox ที่ส่งมาจากบัญชีรอง แล้วทำเครื่องหมายว่าอ่านแล้ว
+ * ดึงอีเมลจากแผ่นงาน RawInbox ที่ส่งมาจากบัญชีรอง แล้วทำเครื่องหมายว่าประมวลผลแล้ว
  */
 function consumeExternalCollectorEmails() {
   try {
@@ -523,6 +535,8 @@ function getDashboardData() {
 
     return {
       success: true,
+      primaryEmail: DEFAULT_CONFIG.PRIMARY_EMAIL,
+      accounts: CHRIS_ACCOUNTS,
       hasApiKey: Boolean(config.geminiApiKey),
       hasDiscordWebhook: Boolean(config.discordWebhookUrl),
       spreadsheetId: config.spreadsheetId,
@@ -545,8 +559,8 @@ function getAppConfig() {
   return {
     geminiApiKey: props.getProperty('GEMINI_API_KEY') || '',
     discordWebhookUrl: props.getProperty('DISCORD_WEBHOOK_URL') || '',
-    spreadsheetId: props.getProperty('SPREADSHEET_ID') || '',
-    dashboardUrl: props.getProperty('DASHBOARD_URL') || ScriptApp.getService().getUrl() || ''
+    spreadsheetId: props.getProperty('SPREADSHEET_ID') || DEFAULT_CONFIG.DEFAULT_SPREADSHEET_ID,
+    dashboardUrl: props.getProperty('DASHBOARD_URL') || DEFAULT_CONFIG.DEFAULT_DASHBOARD_URL
   };
 }
 

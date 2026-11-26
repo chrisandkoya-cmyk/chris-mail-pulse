@@ -1,18 +1,18 @@
 /**
- * สคริปต์ตัวลูกสำหรับบัญชี Gmail รอง (Collector.gs) — ทางเลือกเสริมหากไม่ต้องการตั้ง Auto-Forward
- * หน้าที่: ดึงอีเมลใหม่จากบัญชีรองแล้วส่งไปเก็บใน Google Sheet กลางของบัญชีหลักก่อนเวลา 05:00 และ 18:00 น.
+ * สคริปต์ตัวลูกสำหรับบัญชี Gmail รองทั้ง 11 บัญชีของคริส (Collector.gs)
+ * ตั้งค่ารหัส Google Sheet กลางให้เรียบร้อยแล้ว ไม่ต้องแก้โค้ดแม้แต่บรรทัดเดียว!
+ * เพียงวางโค้ดนี้ในบัญชีรอง แล้วกดรัน setupCollectorTriggers 1 ครั้ง
  */
 
-// ใส่รหัส Google Sheet (Spreadsheet ID) ของบัญชีหลัก และชื่อเรียกบัญชีรองนี้
 const COLLECTOR_CONFIG = {
-  MASTER_SPREADSHEET_ID: 'ใส่_SPREADSHEET_ID_ของบัญชีหลักที่นี่',
-  ACCOUNT_LABEL: 'ใส่ชื่ออีเมลหรือชื่อเรียกบัญชีนี้ (เช่น chris.college@gmail.com)',
+  // รหัส Google Sheet กลางที่สร้างและแชร์สิทธิ์ให้ทั้ง 12 บัญชีของคริสเรียบร้อยแล้ว
+  MASTER_SPREADSHEET_ID: '1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk',
   LOOKBACK_HOURS: 14,
   TIMEZONE: 'Asia/Bangkok'
 };
 
 /**
- * ตั้งเวลาให้บัญชีรองส่งข้อมูลเข้า Sheet กลางตอน 04:45 น. และ 17:45 น. (ก่อนเวลาสรุปจริง 15 นาที)
+ * ตั้งเวลาให้บัญชีรองส่งข้อมูลเข้า Sheet กลางตอน 04:45 น. และ 17:45 น. (ก่อนเวลาสรุปจริงของเมลหลัก 15 นาที)
  */
 function setupCollectorTriggers() {
   const triggers = ScriptApp.getProjectTriggers();
@@ -39,21 +39,23 @@ function setupCollectorTriggers() {
     .nearMinute(45)
     .inTimezone(COLLECTOR_CONFIG.TIMEZONE)
     .create();
+
+  // ดึงเมลรอบแรกส่งเข้า Sheet กลางทันทีตอนกดติดตั้ง
+  pushEmailsToMasterSheet();
 }
 
 /**
- * ดึงอีเมลใหม่ในบัญชีรองแล้วบันทึกลงแผ่นงาน RawInbox ของ Google Sheet กลาง
+ * ดึงอีเมลใหม่ในบัญชีรองแล้วบันทึกลงแผ่นงาน RawInbox ของ Google Sheet กลางอัตโนมัติ
  */
 function pushEmailsToMasterSheet() {
   const cutoffTime = new Date(new Date().getTime() - (COLLECTOR_CONFIG.LOOKBACK_HOURS * 60 * 60 * 1000));
   const afterEpoch = Math.floor(cutoffTime.getTime() / 1000);
-  const accountEmail = COLLECTOR_CONFIG.ACCOUNT_LABEL || Session.getActiveUser().getEmail();
+  const accountEmail = (Session.getActiveUser().getEmail() || 'secondary@gmail.com').toLowerCase();
 
   const ss = SpreadsheetApp.openById(COLLECTOR_CONFIG.MASTER_SPREADSHEET_ID);
   const sheet = ss.getSheetByName('RawInbox');
   if (!sheet) return;
 
-  // อ่านรายการ ID ที่เคยส่งไปแล้วเพื่อป้องกันการส่งซ้ำ
   const existingIds = {};
   if (sheet.getLastRow() > 1) {
     const idCol = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
