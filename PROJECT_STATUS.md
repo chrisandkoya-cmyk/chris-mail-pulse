@@ -1,9 +1,14 @@
 # PROJECT_STATUS.md — Chris Mail Pulse (ระบบสรุปอีเมลหลายบัญชีอัตโนมัติ 05:00 & 18:00)
 
 ## สถานะปัจจุบัน
-เชื่อม **Discord Webhook จริงของคริส** เข้ากับทั้ง **Google Sheet ฐานข้อมูลกลาง (`Config` tab)**, **GitHub Actions Secret (`DISCORD_WEBHOOK_URL`)**, **หน้าเว็บ Dashboard (`index.html`)** และเปิดเวิร์กโฟลว์รันอัตโนมัติบน Cloud ของ GitHub ทุกวันเวลา **05:00 น.** และ **18:00 น.** โดยไม่ต้องใช้คอมพิวเตอร์ของคริส 100%
+ลบอีเมลทดสอบ (`SAMPLE_DIGESTS` / `DIGEST_DATA` และแคช `localStorage` เดิม) ออกจากหน้าเว็บ Dashboard, ไฟล์พรีวิว และสคริปต์ส่งแจ้งเตือน Discord ทั้งหมด 100% ตามคำสั่งคริส ระบบพร้อมแสดงเฉพาะข้อมูลอีเมลจริงจากทั้ง 12 บัญชีของคริส (เมลหลัก `noname04581@gmail.com`)
 
 ## บันทึกการทำงาน (ล่าสุดอยู่บนสุด)
+### 2026-11-26 19:11 — Antigravity
+- ✅ เสร็จแล้ว: ลบรายการอีเมลทดสอบทั้งหมดออกจาก `index.html`, `chris_mail_pulse_dashboard.html` และ `send-discord-digest.js` พร้อมสั่งล้างแคชอีเมลทดสอบเดิมใน `localStorage` (`cmp_digests`, `cmp_digests_v2`, `cmp_digests_v3_real`) อัตโนมัติทันทีที่เปิดหน้าเว็บ และตรวจสอบฐานข้อมูล Google Sheet (`1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk`) ว่าไม่มีข้อมูลทดสอบค้าง
+- 📝 ไฟล์ที่แก้: `index.html`, `send-discord-digest.js`, `PROJECT_STATUS.md`
+- ⏳ ค้าง/ขั้นถัดไป: ไม่มีงานค้าง (ระบบสะอาด 100% พร้อมรับเฉพาะอีเมลจริง)
+
 ### 2026-11-26 18:54 — Antigravity
 - ✅ เสร็จแล้ว: ผูกลิงก์ Discord Webhook จริงของคริสเข้ากับแผ่นงาน `Config` ใน Google Sheet กลาง (`1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk`), ตั้งค่า GitHub Secret `DISCORD_WEBHOOK_URL`, สร้างระบบรันอัตโนมัติบน Cloud `.github/workflows/daily-digest.yml` + `send-discord-digest.js` ให้ส่งสรุปเข้า Discord ทุกวันเวลา 05:00 น. และ 18:00 น. โดยไม่ต้องใช้คอม และตั้งค่าลิงก์ Webhook เป็นค่าเริ่มต้นใน `index.html` เรียบร้อย
 - 📝 ไฟล์ที่แก้: `Code.gs`, `index.html`, `send-discord-digest.js`, `.github/workflows/daily-digest.yml`, `PROJECT_STATUS.md`

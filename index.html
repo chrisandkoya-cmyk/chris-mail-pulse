@@ -1603,7 +1603,7 @@
             <span class="slot-sub">สรุปเมลข้ามคืนก่อนคริสตื่น</span>
           </div>
         </div>
-        <span class="slot-badge" id="badgeCountMorning">7 ฉบับ</span>
+        <span class="slot-badge" id="badgeCountMorning">0 ฉบับ</span>
       </button>
 
       <button type="button" class="slot-tab" id="tabEvening" onclick="switchSlot('18:00')">
@@ -1618,7 +1618,7 @@
             <span class="slot-sub">สรุปเมลระหว่างวันหลังเลิกเรียน</span>
           </div>
         </div>
-        <span class="slot-badge" id="badgeCountEvening">4 ฉบับ</span>
+        <span class="slot-badge" id="badgeCountEvening">0 ฉบับ</span>
       </button>
     </section>
 
@@ -1961,197 +1961,30 @@
       mono: "'JetBrains Mono', 'IBM Plex Sans Thai', monospace"
     };
 
-    // ข้อมูลสรุปเริ่มต้นที่ผูกกับบัญชีจริงของคริส ทั้งรอบเช้า 05:00 น. และรอบเย็น 18:00 น.
+    // โครงสร้างข้อมูลสรุปเริ่มต้น (ลบอีเมลทดสอบออกทั้งหมดแล้ว รอรับอีเมลจริงจากทั้ง 12 บัญชีของคริส)
     const SAMPLE_DIGESTS = {
       '05:00': {
         slot: '05:00',
         slotTitle: 'รอบเช้า (05:00 น.)',
         date: '2026-11-26',
-        createdAt: 'วันนี้ 05:00 น.',
-        overview: 'อรุณสวัสดิ์ครับคริส! รอบเช้า 05:00 น. สรุปรวมจาก 12 บัญชี (เมลหลัก noname04581@gmail.com) — มีเรื่องด่วน 2 เรื่องคือ "นัดส่งเล่มรายงานบทที่ 3 ภายในวันศุกร์นี้ก่อน 16:00 น." และ "แจ้งเตือนความปลอดภัย GitHub Token หมดอายุใน 3 วัน" ส่วนที่เหลือเป็นอัปเดต Unity และโปรโมชันทั่วไปครับ',
-        items: [
-          {
-            id: 'm_101',
-            account: 'zaq04581za@gmail.com',
-            sender: 'อาจารย์ที่ปรึกษา สาขาเทคโนโลยีธุรกิจดิจิทัล <advisor@lps-tech.ac.th>',
-            originalSubject: '[ด่วน] แจ้งกำหนดส่งบทที่ 3 และตรวจรูปแบบฟอนต์ TH SarabunPSK 16',
-            timestamp: '04:15',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'urgent',
-            summaryTitle: 'อาจารย์แจ้งส่งเล่มรายงานบทที่ 3 ภายในวันศุกร์นี้ ก่อน 16:00 น.',
-            summaryPoints: [
-              'ต้องใช้ฟอนต์ TH SarabunPSK ขนาด 16 เท่านั้น และห้ามตารางขาดข้ามหน้า',
-              'ให้ส่งทั้งไฟล์ Word (.docx) และไฟล์ PDF เข้าโฟลเดอร์ Google Drive ของห้อง สบค.11'
-            ],
-            actionItem: 'ตรวจตารางบทที่ 3 และส่งไฟล์ PDF + Word (.docx) ก่อนวันศุกร์นี้ 16:00 น.',
-            done: false
-          },
-          {
-            id: 'm_102',
-            account: 'chrisandkoya@gmail.com',
-            sender: 'GitHub Security <noreply@github.com>',
-            originalSubject: '[GitHub] Personal access token expiring in 3 days',
-            timestamp: '02:40',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'urgent',
-            summaryTitle: 'ด่วน! GitHub แจ้งเตือน Token ซิงก์โค้ดจะหมดอายุใน 3 วัน (29 พ.ย.)',
-            summaryPoints: [
-              'Personal Access Token ที่เชื่อมกับเครื่อง DESKTOP-U0AMFJ7 จะหมดอายุวันที่ 29 พ.ย.',
-              'หากไม่ต่ออายุจะไม่สามารถ git push โค้ดขึ้นรีโปได้'
-            ],
-            actionItem: 'กด Regenerate Token ในหน้า GitHub Settings ก่อนวันที่ 29 พ.ย.',
-            done: false
-          },
-          {
-            id: 'm_103',
-            account: 'noname04581@gmail.com',
-            sender: 'Google Cloud & AI Studio <google-ai-noreply@google.com>',
-            originalSubject: 'Your Gemini API Free Tier monthly usage summary',
-            timestamp: '03:10',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'general',
-            summaryTitle: 'เมลหลัก noname04581: สรุปโควตา Gemini API Free Tier — ใช้งานฟรี 100% (0 บาท)',
-            summaryPoints: [
-              'การใช้โมเดล gemini-2.5-flash อยู่ในเกณฑ์ฟรี 100% ยอดบิล 0 บาท',
-              'โควตาคงเหลือเพียงพอสำหรับรันสรุปอีเมลทั้ง 12 บัญชีทุกวัน'
-            ],
-            actionItem: '',
-            done: false
-          },
-          {
-            id: 'm_104',
-            account: 'msatergenshi@gmail.com',
-            sender: 'Unity Technologies <no-reply@unity3d.com>',
-            originalSubject: 'Unity 6 LTS patch update & 2D Pixel Art package update',
-            timestamp: '01:20',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'general',
-            summaryTitle: 'Unity ปล่อยอัปเดตแพตช์เสถียรภาพสำหรับ GTX 1050 Ti และระบบ 2D',
-            summaryPoints: [
-              'ลดการใช้ VRAM บนการ์ดจอ 4GB (เหมาะกับ GTX 1050 Ti ของคริส)',
-              'สามารถกดอัปเดตผ่าน Unity Hub ได้เมื่อสะดวก'
-            ],
-            actionItem: '',
-            done: false
-          },
-          {
-            id: 'm_105',
-            account: 'oatthawut113366@gmail.com',
-            sender: 'Google Drive <drive-shares-dm-noreply@google.com>',
-            originalSubject: 'เพื่อนร่วมชั้น สบค.11 แชร์โฟลเดอร์ "รวมภาพกิจกรรมวิทยาลัย" กับคุณ',
-            timestamp: '00:45',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'general',
-            summaryTitle: 'เพื่อนห้อง สบค.11 แชร์โฟลเดอร์รูปภาพกิจกรรมเข้า Google Drive',
-            summaryPoints: [
-              'มีไฟล์รูปภาพ 24 ไฟล์สำหรับนำไปใส่ภาคผนวกในเล่มรายงาน'
-            ],
-            actionItem: '',
-            done: true
-          },
-          {
-            id: 'm_106',
-            account: 'zaqdera@gmail.com',
-            sender: 'Steam Store <noreply@steampowered.com>',
-            originalSubject: 'เกมใน Wishlist ของคุณกำลังลดราคา Autumn Sale!',
-            timestamp: '04:02',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'promo',
-            summaryTitle: 'Steam Autumn Sale ลดราคาเกมอินดี้และโปรแกรมทำเกม 50-75%',
-            summaryPoints: [
-              'โปรโมชันลดราคา 50-75% หมดเขตสัปดาห์หน้า ไม่มีความเร่งด่วน'
-            ],
-            actionItem: '',
-            done: false
-          },
-          {
-            id: 'm_107',
-            account: 'zaq04581@gmail.com',
-            sender: 'Shopee Thailand <info@mail.shopee.co.th>',
-            originalSubject: 'แจกโค้ดส่งฟรีประจำวันและส่วนลดอุปกรณ์คอมพิวเตอร์',
-            timestamp: '04:30',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'promo',
-            summaryTitle: 'โฆษณาโค้ดส่งฟรีประจำวันจาก Shopee (ไม่มีรายการคำสั่งซื้อค้าง)',
-            summaryPoints: [
-              'จดหมายข่าวการตลาดทั่วไป ข้ามได้เลย'
-            ],
-            actionItem: '',
-            done: false
-          }
-        ]
+        createdAt: 'รอซิงก์รอบ 05:00 น.',
+        overview: 'ลบอีเมลทดสอบออกทั้งหมดแล้วครับคริส — ระบบพร้อมรอรับข้อมูลสรุปอีเมลจริงจากทั้ง 12 บัญชี (เมลหลัก noname04581@gmail.com) ในรอบเช้า 05:00 น.',
+        items: []
       },
       '18:00': {
         slot: '18:00',
         slotTitle: 'รอบเย็น (18:00 น.)',
-        date: '2026-11-25',
-        createdAt: 'เมื่อวาน 18:00 น.',
-        overview: 'สรุปรอบเย็น 18:00 น. จากทั้ง 12 บัญชีของคริส — เรื่องด่วน 1 เรื่องคือ "ประกาศตารางสอบปฏิบัติภาษา C ห้อง สบค.11 วันจันทร์หน้า เวลา 09:00 น." ส่วนอีก 3 ฉบับเป็นแจ้งเตือน Build APK Android และข่าวสารทั่วไปครับ',
-        items: [
-          {
-            id: 'e_201',
-            account: 'zaq04581za@gmail.com',
-            sender: 'งานทะเบียนและวัดผล <reg@lps-tech.ac.th>',
-            originalSubject: 'ประกาศตารางสอบปฏิบัติวิชาการเขียนโปรแกรมภาษา C (ห้อง สบค.11)',
-            timestamp: '15:30',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'urgent',
-            summaryTitle: 'ด่วน! ประกาศตารางสอบปฏิบัติภาษา C ห้อง สบค.11 วันจันทร์หน้า เวลา 09:00 น.',
-            summaryPoints: [
-              'สอบเขียนโปรแกรมภาษา C เรื่องคำสั่งเงื่อนไขและลูป วันจันทร์หน้า เวลา 09:00 น.',
-              'ให้นำบัตรนักศึกษามาแสดงก่อนเข้าห้องสอบ'
-            ],
-            actionItem: 'ทบทวนโค้ดภาษา C เรื่องลูปและเตรียมบัตรนักศึกษาก่อนวันจันทร์หน้า 09:00 น.',
-            done: false
-          },
-          {
-            id: 'e_202',
-            account: 'chrisandkoya@gmail.com',
-            sender: 'GitHub Actions <notifications@github.com>',
-            originalSubject: '[chrisandkoya-cmyk] Run succeeded: Android Kotlin Compose APK build',
-            timestamp: '16:45',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'general',
-            summaryTitle: 'GitHub Actions สร้างไฟล์ APK แอพ Android (Kotlin Compose) สำเร็จ 100%',
-            summaryPoints: [
-              'Build APK ผ่านฟรี 100% พร้อมดาวน์โหลดลง Xiaomi 14 ได้ทันที'
-            ],
-            actionItem: '',
-            done: true
-          },
-          {
-            id: 'e_203',
-            account: 'noname04581@gmail.com',
-            sender: 'Discord <noreply@discord.com>',
-            originalSubject: 'สรุปข้อความใหม่ในเซิร์ฟเวอร์นักพัฒนาเกม Unity & Godot',
-            timestamp: '17:10',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'general',
-            summaryTitle: 'เมลหลัก noname04581: อัปเดตกระทู้เทคนิคทำเกม 2D ในกลุ่ม Unity & Godot',
-            summaryPoints: [
-              'มีการแชร์เทคนิคจัดแสง 2D และ Shader เบาเครื่องสำหรับ GTX 1050 Ti'
-            ],
-            actionItem: '',
-            done: false
-          },
-          {
-            id: 'e_204',
-            account: 'hyakx33@gmail.com',
-            sender: 'Canva <no-reply@canva.com>',
-            originalSubject: 'เทมเพลตพรีเซนเทชันใหม่ประจำสัปดาห์',
-            timestamp: '14:05',
-            gmailUrl: 'https://mail.google.com/mail/u/0/#inbox',
-            category: 'promo',
-            summaryTitle: 'แนะนำเทมเพลตสไลด์ใหม่จาก Canva (จดหมายข่าวทั่วไป)',
-            summaryPoints: [
-              'ไม่มีข้อความสำคัญ ข้ามได้'
-            ],
-            actionItem: '',
-            done: false
-          }
-        ]
+        date: '2026-11-26',
+        createdAt: 'รอซิงก์รอบ 18:00 น.',
+        overview: 'ลบอีเมลทดสอบออกทั้งหมดแล้วครับคริส — ระบบพร้อมรอรับข้อมูลสรุปอีเมลจริงจากทั้ง 12 บัญชี (เมลหลัก noname04581@gmail.com) ในรอบเย็น 18:00 น.',
+        items: []
       }
     };
+
+    // ล้างแคชอีเมลทดสอบเดิมออกจากเบราว์เซอร์ทั้งหมดโดยอัตโนมัติ
+    localStorage.removeItem('cmp_digests');
+    localStorage.removeItem('cmp_digests_v2');
+    localStorage.removeItem('cmp_digests_v3_real');
 
     // ประกอบลิงก์ Discord Webhook ของคริสในหน่วยความจำเพื่อป้องกันระบบสแกนสาธารณะยกเลิก Webhook
     const DEFAULT_DISCORD_HOOK = ['https://dis', 'cord.com/api/web', 'hooks/1575704378180899008/', 'Ejf6D-agzV0Xew-A4vHIaUkP5gvKdZ0m', 'QWaIjm1HJh1MM2vNQxOyFn8JUevgsK-nYDrl'].join('');
@@ -2168,7 +2001,7 @@
       hlMode: localStorage.getItem('cmp_hl_mode') || 'vivid',
       customKeywords: localStorage.getItem('cmp_custom_kw') || '',
       accounts: JSON.parse(localStorage.getItem('cmp_accounts_v3_real') || 'null') || DEFAULT_ACCOUNTS,
-      digests: JSON.parse(localStorage.getItem('cmp_digests_v3_real') || 'null') || SAMPLE_DIGESTS,
+      digests: JSON.parse(localStorage.getItem('cmp_digests_v4_clean') || 'null') || SAMPLE_DIGESTS,
       webhookUrl: localStorage.getItem('cmp_discord_webhook') || DEFAULT_DISCORD_HOOK
     };
 
@@ -2413,9 +2246,9 @@
           count++;
         }
       });
-      localStorage.setItem('cmp_digests_v3_real', JSON.stringify(state.digests));
+      localStorage.setItem('cmp_digests_v4_clean', JSON.stringify(state.digests));
       renderAll();
-      showToast(count > 0 ? 'เคลียร์เมลโปรโมชัน ' + count + ' ฉบับเรียบร้อย!' : 'เมลโปรโมชันถูกเคลียร์หมดแล้วครับ');
+      showToast(count > 0 ? 'เคลียร์เมลโปรโมชัน ' + count + ' ฉบับเรียบร้อย!' : 'ไม่มีเมลโปรโมชันค้างในรอบนี้ครับ');
     }
 
     function renderAll() {
@@ -2433,7 +2266,7 @@
       const urgentItems = items.filter(function(i) { return i.category === 'urgent'; });
       const generalCount = items.filter(function(i) { return i.category === 'general'; }).length;
       const doneCount = items.filter(function(i) { return i.done; }).length;
-      const pct = items.length > 0 ? Math.round((doneCount / items.length) * 100) : 100;
+      const pct = items.length > 0 ? Math.round((doneCount / items.length) * 100) : 0;
 
       document.getElementById('statTotal').textContent = items.length;
       document.getElementById('statUrgent').textContent = urgentItems.length;
@@ -2541,6 +2374,13 @@
       });
 
       const container = document.getElementById('emailListContainer');
+      if (items.length === 0) {
+        container.innerHTML = '<div class="empty-state">' +
+          '<p style="font-weight:800; font-size:1.05rem; margin-bottom:4px;">ลบอีเมลทดสอบออกทั้งหมดแล้ว • รอรับข้อมูลอีเมลจริง</p>' +
+          '<p style="font-size:0.88rem;">ระบบจะดึงและสรุปอีเมลจริงจากทั้ง 12 บัญชีของคริส (เมลหลัก noname04581@gmail.com) อัตโนมัติทุกเวลา 05:00 น. และ 18:00 น.</p>' +
+          '</div>';
+        return;
+      }
       if (filtered.length === 0) {
         container.innerHTML = '<div class="empty-state">' +
           '<p style="font-weight:800; font-size:1.05rem; margin-bottom:4px;">ไม่พบรายการอีเมลในตัวกรองนี้</p>' +
@@ -2614,7 +2454,7 @@
       const target = digest.items.find(function(i) { return i.id === itemId; });
       if (target) {
         target.done = !target.done;
-        localStorage.setItem('cmp_digests_v3_real', JSON.stringify(state.digests));
+        localStorage.setItem('cmp_digests_v4_clean', JSON.stringify(state.digests));
         renderAll();
         showToast(target.done ? 'ติ๊กเสร็จเรียบร้อย!' : 'ย้ายกลับมาเป็นรอดำเนินการ');
       }
@@ -2883,7 +2723,7 @@
             res.digests.forEach(function(d) {
               state.digests[d.slot || '05:00'] = d;
             });
-            localStorage.setItem('cmp_digests_v3_real', JSON.stringify(state.digests));
+            localStorage.setItem('cmp_digests_v4_clean', JSON.stringify(state.digests));
             renderAll();
             showToast('ซิงก์ข้อมูลอีเมลจริงจาก Google Apps Script สำเร็จ!');
           }

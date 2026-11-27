@@ -5,47 +5,23 @@
 
 const https = require('https');
 
-// ข้อมูลสรุปเริ่มต้นสำหรับส่งเข้าห้อง Discord ของคริส
+// โครงสร้างข้อมูลสรุปเริ่มต้น (ลบอีเมลทดสอบออกทั้งหมดแล้ว รอรับอีเมลจริงจากทั้ง 12 บัญชีของคริส)
 const DIGEST_DATA = {
   '05:00': {
     slot: '05:00',
     slotTitle: 'รอบเช้า (05:00 น.)',
-    overview: 'อรุณสวัสดิ์ครับคริส! ระบบ Chris Mail Pulse เชื่อมต่อครบทั้ง 12 บัญชี (เมลหลัก noname04581@gmail.com) เรียบร้อยแล้ว — สรุปรอบเช้ามีเรื่องด่วน 2 เรื่อง และแจ้งเตือนทั่วไป 3 เรื่องครับ',
-    urgent: [
-      {
-        account: 'zaq04581za@gmail.com (อัษฎาวุฒิ)',
-        title: 'อาจารย์แจ้งส่งเล่มรายงานบทที่ 3 ภายในวันศุกร์นี้ ก่อน 16:00 น.',
-        action: 'ตรวจตารางบทที่ 3 (ฟอนต์ TH SarabunPSK 16) และส่งไฟล์ PDF + Word'
-      },
-      {
-        account: 'chrisandkoya@gmail.com (koya chris)',
-        title: 'GitHub แจ้งเตือน Token ซิงก์โค้ดจะหมดอายุใน 3 วัน (29 พ.ย.)',
-        action: 'กด Regenerate Token ในหน้า GitHub Settings'
-      }
-    ],
-    general: [
-      '• **[noname04581@gmail.com]** เมลหลัก: สรุปโควตา Gemini API Free Tier — ใช้งานฟรี 100% (0 บาท)',
-      '• **[msatergenshi@gmail.com]** Unity ปล่อยอัปเดตแพตช์เสถียรภาพสำหรับ GTX 1050 Ti และระบบ 2D',
-      '• **[oatthawut113366@gmail.com]** เพื่อนห้อง สบค.11 แชร์โฟลเดอร์รูปภาพกิจกรรมเข้า Google Drive'
-    ],
-    promo: 'ยุบรวม 2 ฉบับจาก zaqdera@gmail.com และ zaq04581@gmail.com (Steam Autumn Sale ลด 50-75%, โค้ดส่งฟรี Shopee)'
+    overview: 'ระบบ Chris Mail Pulse (ลบอีเมลทดสอบออกทั้งหมดแล้ว) เชื่อมต่อครบทั้ง 12 บัญชี (เมลหลัก noname04581@gmail.com) — ขณะนี้ยังไม่มีอีเมลใหม่ที่ต้องจัดการเร่งด่วนในรอบเช้าครับ',
+    urgent: [],
+    general: [],
+    promo: 'ไม่มีอีเมลโปรโมชันใหม่'
   },
   '18:00': {
     slot: '18:00',
     slotTitle: 'รอบเย็น (18:00 น.)',
-    overview: 'สวัสดีตอนเย็นครับคริส! สรุปอีเมลรอบเย็น 18:00 น. จากทั้ง 12 บัญชี (เมลหลัก noname04581@gmail.com) — มีเรื่องสำคัญ 1 เรื่องเกี่ยวกับตารางสอบปฏิบัติภาษา C ห้อง สบค.11 ครับ',
-    urgent: [
-      {
-        account: 'zaq04581za@gmail.com (อัษฎาวุฒิ)',
-        title: 'ประกาศตารางสอบปฏิบัติภาษา C ห้อง สบค.11 วันจันทร์หน้า เวลา 09:00 น.',
-        action: 'ทบทวนโค้ดภาษา C เรื่องเงื่อนไข/ลูป และเตรียมบัตรนักศึกษา'
-      }
-    ],
-    general: [
-      '• **[chrisandkoya@gmail.com]** GitHub Actions สร้างไฟล์ APK แอพ Android (Kotlin Compose) สำเร็จ 100%',
-      '• **[noname04581@gmail.com]** เมลหลัก: อัปเดตกระทู้เทคนิคทำเกม 2D ในกลุ่ม Unity & Godot'
-    ],
-    promo: 'ยุบรวม 1 ฉบับจาก hyakx33@gmail.com (แนะนำเทมเพลตสไลด์ใหม่จาก Canva)'
+    overview: 'ระบบ Chris Mail Pulse (ลบอีเมลทดสอบออกทั้งหมดแล้ว) เชื่อมต่อครบทั้ง 12 บัญชี (เมลหลัก noname04581@gmail.com) — ขณะนี้ยังไม่มีอีเมลใหม่ที่ต้องจัดการเร่งด่วนในรอบเย็นครับ',
+    urgent: [],
+    general: [],
+    promo: 'ไม่มีอีเมลโปรโมชันใหม่'
   }
 };
 
@@ -79,18 +55,24 @@ function sendToDiscord() {
   const forceSlot = process.env.FORCE_SLOT || info.slot;
   const digest = DIGEST_DATA[forceSlot] || DIGEST_DATA['05:00'];
 
-  const urgentText = digest.urgent.map(function(u) {
-    return '• **[' + u.account + ']** ' + u.title + '\n  ↳ **ต้องทำ:** ' + u.action;
-  }).join('\n');
+  const urgentText = digest.urgent.length > 0
+    ? digest.urgent.map(function(u) {
+        return '• **[' + u.account + ']** ' + u.title + '\n  ↳ **ต้องทำ:** ' + u.action;
+      }).join('\n')
+    : 'ไม่มีอีเมลด่วนในรอบนี้';
+
+  const generalText = digest.general.length > 0
+    ? digest.general.join('\n')
+    : 'ไม่มีแจ้งเตือนทั่วไปในรอบนี้';
 
   const payload = JSON.stringify({
     username: 'Chris Mail Pulse',
-    content: '🔔 **สรุปอีเมล' + digest.slotTitle + '** — เชื่อมต่อครบ **12 บัญชี (เมลหลัก noname04581@gmail.com)** เรียบร้อยแล้วครับคริส!',
+    content: '✅ **สรุปอีเมล' + digest.slotTitle + '** — ลบอีเมลทดสอบออกทั้งหมดแล้ว เชื่อมต่อครบ **12 บัญชี (เมลหลัก noname04581@gmail.com)** เรียบร้อยครับคริส!',
     embeds: [
       {
         title: (digest.slot === '05:00' ? '🌅 ' : '🌇 ') + 'สรุปอีเมล' + digest.slotTitle + ' • ' + info.dateStr,
         description: digest.overview,
-        color: 14427686,
+        color: digest.urgent.length > 0 ? 14427686 : 2450411,
         fields: [
           {
             name: '🚨 สำคัญ / ต้องจัดการ (' + digest.urgent.length + ' ฉบับ)',
@@ -99,7 +81,7 @@ function sendToDiscord() {
           },
           {
             name: '📌 ทั่วไป / อัปเดตระบบ (' + digest.general.length + ' ฉบับ)',
-            value: digest.general.join('\n'),
+            value: generalText,
             inline: false
           },
           {
@@ -114,7 +96,7 @@ function sendToDiscord() {
           }
         ],
         footer: {
-          text: 'Chris Mail Pulse • ทำงานอัตโนมัติบน Cloud ทุกวัน เวลา 05:00 และ 18:00 น. (ไม่ต้องเปิดคอม)'
+          text: 'Chris Mail Pulse • ทำงานอัตโนมัติบน Cloud ทุกวัน เวลา 05:00 และ 18:00 น. (ไม่มีอีเมลทดสอบ)'
         }
       }
     ]
