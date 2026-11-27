@@ -2376,8 +2376,12 @@
       const container = document.getElementById('emailListContainer');
       if (items.length === 0) {
         container.innerHTML = '<div class="empty-state">' +
-          '<p style="font-weight:800; font-size:1.05rem; margin-bottom:4px;">ลบอีเมลทดสอบออกทั้งหมดแล้ว • รอรับข้อมูลอีเมลจริง</p>' +
-          '<p style="font-size:0.88rem;">ระบบจะดึงและสรุปอีเมลจริงจากทั้ง 12 บัญชีของคริส (เมลหลัก noname04581@gmail.com) อัตโนมัติทุกเวลา 05:00 น. และ 18:00 น.</p>' +
+          '<p style="font-weight:800; font-size:1.05rem; margin-bottom:6px;">ลบอีเมลทดสอบออกทั้งหมดแล้ว • รอเชื่อมสิทธิ์อ่าน Gmail จริง</p>' +
+          '<p style="font-size:0.88rem; margin-bottom:14px;">กดปุ่มด้านล่างบนมือถือ Xiaomi 14 เพื่อคัดลอกโค้ดไปวางใน script.google.com (ไม่ต้องเปิดยืนยัน 2 ขั้นตอน)</p>' +
+          '<div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">' +
+            '<button type="button" class="btn btn-primary" onclick="copyRepoFile(\'Code.gs\')">1. คัดลอกโค้ด Code.gs (เมลหลัก)</button>' +
+            '<a href="https://script.google.com/home/start" target="_blank" rel="noopener" class="btn">2. เปิด script.google.com</a>' +
+          '</div>' +
           '</div>';
         return;
       }
