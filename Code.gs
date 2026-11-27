@@ -552,20 +552,36 @@ function getDashboardData() {
 }
 
 /**
- * อ่านค่าการตั้งค่าจาก Script Properties
+ * อ่านค่าการตั้งค่าจากแผ่นงาน Config ใน Google Sheet กลาง และ Script Properties
  */
 function getAppConfig() {
   const props = PropertiesService.getScriptProperties();
+  const sheetId = props.getProperty('SPREADSHEET_ID') || DEFAULT_CONFIG.DEFAULT_SPREADSHEET_ID;
+  let sheetConfig = {};
+
+  try {
+    const ss = SpreadsheetApp.openById(sheetId);
+    const cfgSheet = ss.getSheetByName('Config');
+    if (cfgSheet && cfgSheet.getLastRow() > 1) {
+      const rows = cfgSheet.getDataRange().getValues();
+      for (let i = 1; i < rows.length; i++) {
+        const k = String(rows[i][0] || '').trim();
+        const v = String(rows[i][1] || '').trim();
+        if (k && v) sheetConfig[k] = v;
+      }
+    }
+  } catch (e) {}
+
   return {
-    geminiApiKey: props.getProperty('GEMINI_API_KEY') || '',
-    discordWebhookUrl: props.getProperty('DISCORD_WEBHOOK_URL') || '',
-    spreadsheetId: props.getProperty('SPREADSHEET_ID') || DEFAULT_CONFIG.DEFAULT_SPREADSHEET_ID,
-    dashboardUrl: props.getProperty('DASHBOARD_URL') || DEFAULT_CONFIG.DEFAULT_DASHBOARD_URL
+    geminiApiKey: props.getProperty('GEMINI_API_KEY') || sheetConfig['GEMINI_API_KEY'] || '',
+    discordWebhookUrl: props.getProperty('DISCORD_WEBHOOK_URL') || sheetConfig['DISCORD_WEBHOOK_URL'] || '',
+    spreadsheetId: sheetId,
+    dashboardUrl: props.getProperty('DASHBOARD_URL') || sheetConfig['DASHBOARD_URL'] || DEFAULT_CONFIG.DEFAULT_DASHBOARD_URL
   };
 }
 
 /**
- * บันทึกค่าการตั้งค่า (Gemini API Key & Discord Webhook URL) จากหน้าเว็บ Dashboard
+ * บันทึกค่าการตั้งค่าลงทั้ง Script Properties และแผ่นงาน Config ใน Google Sheet กลาง
  */
 function saveConfigFromWeb(newConfig) {
   const props = PropertiesService.getScriptProperties();

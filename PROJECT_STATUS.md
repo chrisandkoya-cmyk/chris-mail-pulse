@@ -1,9 +1,14 @@
 # PROJECT_STATUS.md — Chris Mail Pulse (ระบบสรุปอีเมลหลายบัญชีอัตโนมัติ 05:00 & 18:00)
 
 ## สถานะปัจจุบัน
-ตั้งค่าระบบพร้อมใช้งานจริงครบทั้ง **12 บัญชี Gmail ของคริส** (เมลหลัก `noname04581@gmail.com` + เมลรองอีก 11 บัญชี) และสร้างฐานข้อมูล Google Sheet กลาง (`1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk`) พร้อมแชร์สิทธิ์ Writer ให้ครบทั้ง 12 บัญชี และฝังรหัส Sheet ลงใน [`Code.gs`](Code.gs), [`Collector.gs`](Collector.gs) และ [`index.html`](index.html) เรียบร้อยแล้ว
+เชื่อม **Discord Webhook จริงของคริส** เข้ากับทั้ง **Google Sheet ฐานข้อมูลกลาง (`Config` tab)**, **GitHub Actions Secret (`DISCORD_WEBHOOK_URL`)**, **หน้าเว็บ Dashboard (`index.html`)** และเปิดเวิร์กโฟลว์รันอัตโนมัติบน Cloud ของ GitHub ทุกวันเวลา **05:00 น.** และ **18:00 น.** โดยไม่ต้องใช้คอมพิวเตอร์ของคริส 100%
 
 ## บันทึกการทำงาน (ล่าสุดอยู่บนสุด)
+### 2026-11-26 18:54 — Antigravity
+- ✅ เสร็จแล้ว: ผูกลิงก์ Discord Webhook จริงของคริสเข้ากับแผ่นงาน `Config` ใน Google Sheet กลาง (`1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk`), ตั้งค่า GitHub Secret `DISCORD_WEBHOOK_URL`, สร้างระบบรันอัตโนมัติบน Cloud `.github/workflows/daily-digest.yml` + `send-discord-digest.js` ให้ส่งสรุปเข้า Discord ทุกวันเวลา 05:00 น. และ 18:00 น. โดยไม่ต้องใช้คอม และตั้งค่าลิงก์ Webhook เป็นค่าเริ่มต้นใน `index.html` เรียบร้อย
+- 📝 ไฟล์ที่แก้: `Code.gs`, `index.html`, `send-discord-digest.js`, `.github/workflows/daily-digest.yml`, `PROJECT_STATUS.md`
+- ⏳ ค้าง/ขั้นถัดไป: ไม่มีงานค้าง (ระบบ Cloud GitHub Actions ตั้งเวลา 05:00 & 18:00 น. ให้เรียบร้อยแล้ว)
+
 ### 2026-11-26 01:40 — Antigravity
 - ✅ เสร็จแล้ว: สร้าง Google Sheet ฐานข้อมูลกลาง `Chris_Mail_Pulse_Database` (`1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk`), สร้างแผ่นงาน `Digests`, `RawInbox`, `Accounts`, แชร์สิทธิ์แก้ไขให้ครบทั้ง 12 บัญชี Gmail ของคริส (`noname04581@gmail.com` เป็นเมลหลัก), ฝังรายชื่อ 12 บัญชีและรหัส Sheet ลงใน `Code.gs`, `Collector.gs`, `index.html` และ Push ขึ้น GitHub Pages เรียบร้อย
 - 📝 ไฟล์ที่แก้: `Code.gs`, `Collector.gs`, `index.html`, `PROJECT_STATUS.md`

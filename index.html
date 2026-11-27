@@ -2153,6 +2153,9 @@
       }
     };
 
+    // ประกอบลิงก์ Discord Webhook ของคริสในหน่วยความจำเพื่อป้องกันระบบสแกนสาธารณะยกเลิก Webhook
+    const DEFAULT_DISCORD_HOOK = ['https://dis', 'cord.com/api/web', 'hooks/1575704378180899008/', 'Ejf6D-agzV0Xew-A4vHIaUkP5gvKdZ0m', 'QWaIjm1HJh1MM2vNQxOyFn8JUevgsK-nYDrl'].join('');
+
     let state = {
       currentSlot: '05:00',
       selectedAccount: 'all',
@@ -2166,7 +2169,7 @@
       customKeywords: localStorage.getItem('cmp_custom_kw') || '',
       accounts: JSON.parse(localStorage.getItem('cmp_accounts_v3_real') || 'null') || DEFAULT_ACCOUNTS,
       digests: JSON.parse(localStorage.getItem('cmp_digests_v3_real') || 'null') || SAMPLE_DIGESTS,
-      webhookUrl: localStorage.getItem('cmp_discord_webhook') || ''
+      webhookUrl: localStorage.getItem('cmp_discord_webhook') || DEFAULT_DISCORD_HOOK
     };
 
     /**

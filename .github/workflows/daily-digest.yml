@@ -1,0 +1,28 @@
+# เวิร์กโฟลว์รันสรุปอีเมลเข้า Discord ของคริสอัตโนมัติทุกวัน เวลา 05:00 น. และ 18:00 น. (เวลาประเทศไทย UTC+7)
+name: Chris Mail Pulse — Daily 05:00 & 18:00 Discord Digest
+
+on:
+  schedule:
+    # รอบเช้า 05:00 น. เวลาไทย (ตรงกับ 22:00 UTC)
+    - cron: '0 22 * * *'
+    # รอบเย็น 18:00 น. เวลาไทย (ตรงกับ 11:00 UTC)
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: 'เลือกรอบที่ต้องการส่ง (05:00 หรือ 18:00)'
+        required: false
+        default: '05:00'
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ดึงโค้ดจากรีโป
+        uses: actions/checkout@v4
+
+      - name: ส่งสรุปอีเมลทั้ง 12 บัญชีเข้า Discord ของคริส
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          FORCE_SLOT: ${{ github.event.inputs.slot }}
+        run: node send-discord-digest.js
