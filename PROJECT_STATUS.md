@@ -1,9 +1,16 @@
 # PROJECT_STATUS.md — Chris Mail Pulse (ระบบสรุปอีเมลหลายบัญชีอัตโนมัติ 05:00 & 18:00)
 
 ## สถานะปัจจุบัน
-ลบอีเมลทดสอบ (`SAMPLE_DIGESTS` / `DIGEST_DATA` และแคช `localStorage` เดิม) ออกจากหน้าเว็บ Dashboard, ไฟล์พรีวิว และสคริปต์ส่งแจ้งเตือน Discord ทั้งหมด 100% ตามคำสั่งคริส ระบบพร้อมแสดงเฉพาะข้อมูลอีเมลจริงจากทั้ง 12 บัญชีของคริส (เมลหลัก `noname04581@gmail.com`)
+เตรียมสคริปต์ [`deploy-on-pc.ps1`](deploy-on-pc.ps1) และข้อมูลทั้งหมดไว้ในรีโป `https://github.com/chrisandkoya-cmyk/chris-mail-pulse` เรียบร้อยแล้ว เพื่อให้ **Antigravity บนเครื่องคอมของคริส (`DESKTOP-U0AMFJ7`)** ดึงรีโปไปรันเชื่อมสิทธิ์อ่าน Gmail (`Code.gs` / `clasp`) ได้ทันทีโดยที่คริสไม่ต้องก๊อปวางโค้ดเองบนมือถือ
 
 ## บันทึกการทำงาน (ล่าสุดอยู่บนสุด)
+### 2026-11-28 18:42 — Antigravity
+- ✅ เสร็จแล้ว: สร้างสคริปต์ติดตั้งอัตโนมัติสำหรับเครื่องคอม `deploy-on-pc.ps1` (ใช้ `@google/clasp` อัปโหลด `Code.gs`, `index.html`, `appsscript.json` ขึ้น Google Apps Script ของเมลหลัก `noname04581@gmail.com` อัตโนมัติ) และเขียนคำสั่งส่งต่องานให้ Antigravity บนคอมใน `PROJECT_STATUS.md`
+- 📝 ไฟล์ที่แก้: `deploy-on-pc.ps1`, `PROJECT_STATUS.md`
+- ⏳ ค้าง/ขั้นถัดไป (สำหรับ Antigravity บนคอม `DESKTOP-U0AMFJ7`):
+  1. รันสคริปต์ `.\deploy-on-pc.ps1` หรือใช้ Browser / `clasp` นำโค้ด `Code.gs` และ `index.html` ขึ้น `script.google.com` ของเมลหลัก `noname04581@gmail.com`
+  2. สั่งรันฟังก์ชัน `setupDailyTriggers()` 1 ครั้งเพื่อกด Authorize สิทธิ์อ่าน Gmail และตั้งเวลาสรุปอัตโนมัติ 05:00 & 18:00 น. (ฐานข้อมูล Google Sheet `1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk` และ Discord Webhook ผูกไว้ในโค้ดครบ 100% แล้ว)
+
 ### 2026-11-26 19:11 — Antigravity
 - ✅ เสร็จแล้ว: ลบรายการอีเมลทดสอบทั้งหมดออกจาก `index.html`, `chris_mail_pulse_dashboard.html` และ `send-discord-digest.js` พร้อมสั่งล้างแคชอีเมลทดสอบเดิมใน `localStorage` (`cmp_digests`, `cmp_digests_v2`, `cmp_digests_v3_real`) อัตโนมัติทันทีที่เปิดหน้าเว็บ และตรวจสอบฐานข้อมูล Google Sheet (`1qNuRcZ0X_nNajV_cq4_hYWWfLnJkTTyiNsAYARchXWk`) ว่าไม่มีข้อมูลทดสอบค้าง
 - 📝 ไฟล์ที่แก้: `index.html`, `send-discord-digest.js`, `PROJECT_STATUS.md`
